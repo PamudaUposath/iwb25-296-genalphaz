@@ -1,20 +1,55 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+  Modal,
+  TextInput,
+  Button,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, Calendar, Award, MapPin, Clock, ChevronRight, Download } from 'lucide-react-native';
+import {
+  User,
+  Calendar,
+  Award,
+  Clock,
+  ChevronRight,
+  Download,
+} from 'lucide-react-native';
+type Donation = {
+  id: number;
+  date: string;
+  location: string;
+  type: string;
+  points: number;
+  certificate: boolean;
+};
 
 export default function ProfileScreen() {
-  const profile = {
+  const [showAllDonations, setShowAllDonations] = React.useState(false);
+  const [detailDonation, setDetailDonation] = React.useState(null);
+  const [editProfileVisible, setEditProfileVisible] = React.useState(false);
+
+  // Profile state to enable editing
+  const [profile, setProfile] = React.useState({
     name: 'Sarah Williams',
     bloodType: 'O+',
     phoneNumber: '+94 77 123 4567',
     email: 'sarah.williams@email.com',
-    lastDonation: '2024-10-15',
-    nextEligible: '2025-02-15',
+    lastDonation: '2025-08-15',
+    nextEligible: '2025-12-15',
     totalDonations: 12,
     totalPoints: 1250,
     certificates: 3,
-  };
+  });
+  
+  
+  const [editProfileData, setEditProfileData] = React.useState(profile);
 
   const donationHistory = [
     {
@@ -51,6 +86,16 @@ export default function ProfileScreen() {
     },
   ];
 
+  // Enable LayoutAnimation on Android
+  React.useEffect(() => {
+    if (
+      Platform.OS === 'android' &&
+      UIManager.setLayoutAnimationEnabledExperimental
+    ) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
   const StatCard = ({ icon: Icon, title, value, subtitle }: any) => (
     <View style={styles.statCard}>
       <View style={styles.statIcon}>
@@ -61,6 +106,7 @@ export default function ProfileScreen() {
       {subtitle && <Text style={styles.statSubtitle}>{subtitle}</Text>}
     </View>
   );
+  
 
   const getDaysUntilEligible = () => {
     const nextDate = new Date(profile.nextEligible);
@@ -68,6 +114,34 @@ export default function ProfileScreen() {
     const diffTime = nextDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+  };
+
+  const toggleShowAllDonations = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowAllDonations((prev) => !prev);
+  };
+
+  // Handlers for modals
+  const openDonationDetails = (donation) => {
+    setDetailDonation(donation);
+  };
+  const closeDonationDetails = () => {
+    setDetailDonation(null);
+  };
+
+  const openEditProfile = () => {
+    setEditProfileData(profile); // reset edits on open
+    setEditProfileVisible(true);
+  };
+
+  const closeEditProfile = () => {
+    setEditProfileVisible(false);
+  };
+
+  // Save edited profile
+  const saveProfile = () => {
+    setProfile(editProfileData);
+    closeEditProfile();
   };
 
   return (
@@ -111,7 +185,7 @@ export default function ProfileScreen() {
           />
           <StatCard
             icon={Clock}
-            title="Next Eligible"
+            title="to Next Eligible"
             value={`${getDaysUntilEligible()} days`}
             subtitle="Until next donation"
           />
@@ -121,34 +195,61 @@ export default function ProfileScreen() {
             value={profile.certificates}
             subtitle="Available"
           />
+          {/* Certificates StatCard kept or remove if you want */}
         </View>
 
         {/* Donation History */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Donation History</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>View all</Text>
+            <TouchableOpacity
+              onPress={toggleShowAllDonations}
+              activeOpacity={1}
+            >
+              <Text style={styles.seeAllText}>
+                {showAllDonations ? 'Show Less' : 'View All'}
+              </Text>
             </TouchableOpacity>
           </View>
-          
-          {donationHistory.map(donation => (
+
+          {(showAllDonations
+            ? donationHistory
+            : donationHistory.slice(0, 2)
+          ).map((donation) => (
             <View key={donation.id} style={styles.historyCard}>
               <View style={styles.historyHeader}>
                 <View>
-                  <Text style={styles.historyDate}>{new Date(donation.date).toLocaleDateString()}</Text>
-                  <Text style={styles.historyLocation}>{donation.location}</Text>
+                  <Text style={styles.historyDate}>
+                    {new Date(donation.date).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.historyLocation}>
+                    {donation.location}
+                  </Text>
                 </View>
                 <View style={styles.historyRight}>
-                  <View style={[styles.typeBadge, donation.type === 'Urgent Request' && styles.urgentTypeBadge]}>
-                    <Text style={[styles.typeText, donation.type === 'Urgent Request' && styles.urgentTypeText]}>
+                  <View
+                    style={[
+                      styles.typeBadge,
+                      donation.type === 'Urgent Request' &&
+                        styles.urgentTypeBadge,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.typeText,
+                        donation.type === 'Urgent Request' &&
+                          styles.urgentTypeText,
+                      ]}
+                    >
                       {donation.type}
                     </Text>
                   </View>
-                  <Text style={styles.pointsEarned}>+{donation.points} pts</Text>
+                  <Text style={styles.pointsEarned}>
+                    +{donation.points} pts
+                  </Text>
                 </View>
               </View>
-              
+
               <View style={styles.historyFooter}>
                 <View style={styles.certificateStatus}>
                   {donation.certificate ? (
@@ -160,7 +261,10 @@ export default function ProfileScreen() {
                     <Text style={styles.noCertificate}>No certificate</Text>
                   )}
                 </View>
-                <TouchableOpacity style={styles.viewDetails}>
+                <TouchableOpacity
+                  style={styles.viewDetails}
+                  onPress={() => openDonationDetails(donation)}
+                >
                   <Text style={styles.viewDetailsText}>Details</Text>
                   <ChevronRight size={14} color="#6B7280" />
                 </TouchableOpacity>
@@ -171,24 +275,95 @@ export default function ProfileScreen() {
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <TouchableOpacity style={styles.actionItem}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+          </View>
+          <TouchableOpacity style={styles.actionItem} onPress={openEditProfile}>
             <User size={20} color="#374151" />
             <Text style={styles.actionText}>Edit Profile</Text>
             <ChevronRight size={20} color="#6B7280" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionItem}>
-            <Calendar size={20} color="#374151" />
-            <Text style={styles.actionText}>Donation Schedule</Text>
-            <ChevronRight size={20} color="#6B7280" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionItem}>
-            <Download size={20} color="#374151" />
-            <Text style={styles.actionText}>Download All Certificates</Text>
-            <ChevronRight size={20} color="#6B7280" />
-          </TouchableOpacity>
+          {/* Removed Donation Schedule and Download All Certificates */}
         </View>
       </ScrollView>
+
+      {/* Donation Details Modal */}
+      <Modal visible={!!detailDonation} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {detailDonation && (
+              <>
+                <Text style={styles.modalTitle}>Donation Details</Text>
+                <Text>
+                  Date: {new Date(detailDonation.date).toLocaleDateString()}
+                </Text>
+                <Text>Location: {detailDonation.location}</Text>
+                <Text>Type: {detailDonation.type}</Text>
+                <Text>Points Earned: {detailDonation.points}</Text>
+                <Text>
+                  Certificate:{' '}
+                  {detailDonation.certificate ? 'Available' : 'Not Available'}
+                </Text>
+                <Button title="Close" onPress={closeDonationDetails} />
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Profile Modal */}
+      <Modal visible={editProfileVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Profile</Text>
+            <TextInput
+              style={styles.input}
+              value={editProfileData.name}
+              onChangeText={(text) =>
+                setEditProfileData({ ...editProfileData, name: text })
+              }
+              placeholder="Name"
+            />
+            <TextInput
+              style={styles.input}
+              value={editProfileData.phoneNumber}
+              onChangeText={(text) =>
+                setEditProfileData({ ...editProfileData, phoneNumber: text })
+              }
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+            />
+            <TextInput
+              style={styles.input}
+              value={editProfileData.email}
+              onChangeText={(text) =>
+                setEditProfileData({ ...editProfileData, email: text })
+              }
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 12,
+              }}
+            >
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: '#aaa' }]}
+                onPress={closeEditProfile}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={saveProfile}>
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -439,5 +614,51 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#374151',
     marginLeft: 12,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: '#DC2626',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 8,
+  },
+
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

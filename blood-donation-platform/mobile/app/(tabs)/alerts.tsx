@@ -1,13 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MapPin, Clock, Filter, ChevronDown } from 'lucide-react-native';
+import { MapPin, Clock, Filter } from 'lucide-react-native';
+
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function AlertsScreen() {
   const [selectedFilter, setSelectedFilter] = useState('All');
-  
+  const [showFilters, setShowFilters] = useState(true);
+
+  // Animated value for filter height
+  const filterHeight = useRef(new Animated.Value(0)).current;
+
   const filters = ['All', 'O+', 'Critical', 'Nearby'];
-  
+
   const alerts = [
     {
       id: 1,
@@ -55,22 +75,36 @@ export default function AlertsScreen() {
     },
   ];
 
-  const getUrgencyColor = (urgency: string) => {
-    return urgency === 'Critical' ? '#DC2626' : '#F59E0B';
+  // Animate filter bar open/close
+  const toggleFilters = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowFilters(prev => !prev);
   };
 
-  const getUrgencyBg = (urgency: string) => {
-    return urgency === 'Critical' ? '#FEE2E2' : '#FEF3C7';
-  };
+  // Filter alerts based on selected filter
+  const filteredAlerts = alerts.filter(alert => {
+    if (selectedFilter === 'All') return true;
+    if (selectedFilter === 'Nearby') {
+      const distanceNum = parseFloat(alert.distance);
+      return distanceNum <= 10; // nearby = within 10 km
+    }
+    if (selectedFilter === 'Critical') {
+      return alert.urgency === 'Critical';
+    }
+    // blood types
+    return alert.bloodType === selectedFilter;
+  });
+
+  const getUrgencyColor = (urgency: string) => (urgency === 'Critical' ? '#DC2626' : '#F59E0B');
+
+  const getUrgencyBg = (urgency: string) => (urgency === 'Critical' ? '#FEE2E2' : '#FEF3C7');
 
   const FilterButton = ({ title, isSelected, onPress }: any) => (
     <TouchableOpacity
       style={[styles.filterButton, isSelected && styles.filterButtonActive]}
       onPress={onPress}
     >
-      <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-        {title}
-      </Text>
+      <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>{title}</Text>
     </TouchableOpacity>
   );
 
@@ -78,30 +112,35 @@ export default function AlertsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Urgent Blood Requests</Text>
-        <TouchableOpacity style={styles.filterIcon}>
+
+        <TouchableOpacity style={styles.filterIcon} onPress={toggleFilters}>
           <Filter size={24} color="#374151" />
         </TouchableOpacity>
       </View>
 
-      {/* Filter Bar */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
-        {filters.map(filter => (
-          <FilterButton
-            key={filter}
-            title={filter}
-            isSelected={selectedFilter === filter}
-            onPress={() => setSelectedFilter(filter)}
-          />
-        ))}
-      </ScrollView>
+      {/* Filter Bar - show only if showFilters is true */}
+{showFilters && (
+  <View style={styles.filterWrapper}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.filterContent}
+    >
+      {filters.map(filter => (
+        <FilterButton
+          key={filter}
+          title={filter}
+          isSelected={selectedFilter === filter}
+          onPress={() => setSelectedFilter(filter)}
+        />
+      ))}
+    </ScrollView>
+  </View>
+)}
+
 
       <ScrollView style={styles.scrollView}>
-        {alerts.map(alert => (
+        {filteredAlerts.map(alert => (
           <View key={alert.id} style={styles.alertCard}>
             <View style={styles.alertHeader}>
               <View style={styles.alertLeft}>
@@ -127,21 +166,12 @@ export default function AlertsScreen() {
             <View style={styles.alertMetrics}>
               <View style={styles.metric}>
                 <MapPin size={16} color="#6B7280" />
-                <Text style={styles.metricText}>{alert.distance}</Text>
+                <Text style={styles.metricText}>Approximately {alert.distance}</Text>
               </View>
               <View style={styles.metric}>
                 <Clock size={16} color="#DC2626" />
                 <Text style={styles.metricText}>Needed in {alert.timeLeft}</Text>
               </View>
-            </View>
-
-            <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.declineButton}>
-                <Text style={styles.declineButtonText}>Decline</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.acceptButton}>
-                <Text style={styles.acceptButtonText}>Accept Request</Text>
-              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -172,24 +202,40 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   filterContainer: {
-    marginBottom: 16,
-  },
-  filterContent: {
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
-  filterButtonActive: {
-    backgroundColor: '#DC2626',
-    borderColor: '#DC2626',
-  },
+  filterWrapper: {
+  backgroundColor: '#FFFFFF',
+  borderRadius: 40,
+  margin: 16,
+  marginTop: 0,
+  paddingVertical: 8, 
+  marginBottom: 8,
+},
+
+filterContent: {
+  paddingHorizontal: 16,
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+filterButton: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  borderRadius: 20,
+  backgroundColor: '#FFFFFF',
+  borderWidth: 1,
+  borderColor: '#E5E7EB',
+  marginRight: 8, // replaces gap for better compatibility
+},
+
+filterButtonActive: {
+  backgroundColor: '#DC2626',
+  borderColor: '#DC2626',
+},
+
   filterText: {
     fontSize: 14,
     color: '#6B7280',

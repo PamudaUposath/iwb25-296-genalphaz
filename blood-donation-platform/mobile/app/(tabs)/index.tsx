@@ -1,9 +1,56 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React,{useState} from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Modal, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bell, Calendar, Award, Clock, MapPin, Droplets } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function HomeScreen() {
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [reminderTitle, setReminderTitle] = useState('');
+  const [reminderDate, setReminderDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  type Reminder = { title: string; date: Date };
+
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+
+
+
+  const handleSaveReminder = () => {
+    if (!reminderTitle || !reminderDate) {
+      alert("Please enter title and date/time");
+      return;
+    }
+    const newReminder = { title: reminderTitle, date: reminderDate };
+    setReminders(prev => [...prev, newReminder]);
+    alert(`Reminder "${reminderTitle}" set for ${reminderDate.toLocaleString()}`);
+    setModalVisible(false);
+    setReminderTitle('');
+    setReminderDate(null);
+  };
+
+
+  const router = useRouter();
+
+  const handleOpenExternal = () => {
+    Linking.openURL('https://raktha.nbts.health.gov.lk/welcome');
+  };
+
+  const goToLeaderboard = () => {
+  router.push('/leaderboard');
+  };
+  
+  const goToProfile = () => {
+  router.push('/profile');
+  };
+  
+  const goToAlerts = () => {
+  router.push('/alerts');
+  };
+
+
   const userBloodType = 'O+';
   
   const bloodStock = [
@@ -35,6 +82,13 @@ export default function HomeScreen() {
       timeLeft: '12 hours'
     }
   ];
+  
+  const notifications = [
+  "You have 3 new alerts",
+  "Appointment confirmed",
+  "Blood donation reminder",
+  ];
+
 
   const getStockStatusColor = (status: string) => {
     switch (status) {
@@ -62,19 +116,34 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
+  const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  else if (hour < 18) return "Good Afternoon";
+  else return "Good Evening";
+};
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Good Morning</Text>
+            <Text style={styles.greeting}>{getGreeting()},</Text>
             <Text style={styles.userName}>Sarah Williams</Text>
+            <Text style={styles.motivational}>Give hope, give life.</Text>
+            
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => {
+              setModalType('notification');
+              setModalVisible(true);
+            }}
+          >
             <Bell size={24} color="#374151" />
             <View style={styles.notificationBadge}>
-              <Text style={styles.notificationCount}>3</Text>
+              <Text style={styles.notificationCount}>{notifications.length}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -104,7 +173,7 @@ export default function HomeScreen() {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Urgent Alerts</Text>
               <TouchableOpacity>
-                <Text style={styles.seeAllText}>See all</Text>
+                <Text style={styles.seeAllText} onPress={goToAlerts}>See all</Text>
               </TouchableOpacity>
             </View>
             {urgentAlerts.slice(0, 2).map(alert => (
@@ -130,7 +199,9 @@ export default function HomeScreen() {
 
         {/* Live Blood Stock */}
         <View style={styles.section}>
+          <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Live Blood Stock</Text>
+          </View>
           <View style={styles.bloodStockGrid}>
             {bloodStock.map(stock => (
               <View key={stock.type} style={styles.stockCard}>
@@ -149,33 +220,114 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <View style={styles.section}>
+          <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
+          </View>
           <View style={styles.quickActionsGrid}>
             <QuickActionCard
               icon={Calendar}
               title="Book Appointment"
               subtitle="Schedule donation"
+              onPress={handleOpenExternal}
             />
             <QuickActionCard
               icon={Award}
               title="My Points"
-              subtitle="1,250 total"
+              subtitle="Total D Points"
               color="#059669"
+              onPress={goToLeaderboard}
             />
             <QuickActionCard
               icon={Clock}
-              title="Eligibility"
-              subtitle="45 days left"
+              title="History & Eligibility"
+              subtitle="When can I donate?"
               color="#F59E0B"
+              onPress={goToProfile}
             />
             <QuickActionCard
               icon={Bell}
               title="Reminders"
-              subtitle="Set alerts"
+              subtitle="Set alerts for donations"
               color="#7C3AED"
+              onPress={() => {
+                setModalType('reminder');
+                setModalVisible(true);
+              }}
             />
           </View>
         </View>
+        <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+              <View style={styles.modalContent}>
+                {modalType === 'notification' && (
+                  <>
+                    <Text style={styles.modalTitle}>Notifications</Text>
+                    {notifications.map((notification, index) => (
+                      <Text key={index} style={styles.notificationText}>{notification}</Text>
+                    ))}
+                  </>
+                )}
+                {modalType === 'reminder' && (
+                  <>
+                  <Text style={styles.modalTitle}>Set Reminder</Text>
+                  
+                  <Text style={styles.label}>Reminder Title</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter reminder title"
+                    value={reminderTitle}
+                    onChangeText={setReminderTitle}
+                  />
+
+                  <Text style={styles.label}>Date & Time</Text>
+                  <TouchableOpacity style={styles.dateTimeButton} onPress={() => setShowDatePicker(true)}>
+                    <Text style={styles.dateTimeText}>{reminderDate ? reminderDate.toLocaleString() : "Select date & time"}</Text>
+                  </TouchableOpacity>
+
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={reminderDate || new Date()}
+                      mode="datetime"
+                      display="default"
+                      onChange={(event, selectedDate) => {
+                        if (event?.type === 'dismissed') {
+                          setShowDatePicker(false);
+                          return;
+                        }
+                        setShowDatePicker(false);
+                        if (selectedDate) setReminderDate(selectedDate);
+                      }}
+                    />
+                  )}
+
+                  <TouchableOpacity style={styles.saveButton} onPress={handleSaveReminder}>
+                    <Text style={styles.saveButtonText}>Save Reminder</Text>
+                  </TouchableOpacity>
+                </>
+                
+                )}
+                <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>Your Reminders:</Text>
+                  {reminders.length === 0 ? (
+                    <Text>No reminders set</Text>
+                  ) : (
+                    reminders.map((reminder, index) => (
+                      <View key={index} style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 8, marginBottom: 8 }}>
+                        <Text style={{ fontWeight: '600' }}>{reminder.title}</Text>
+                        <Text>{reminder.date.toLocaleString()}</Text>
+                      </View>
+                    ))
+                  )}
+                </View>
+              </View>
+            </Pressable>
+          </Modal>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -185,6 +337,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+    paddingBottom: -100,
   },
   scrollView: {
     flex: 1,
@@ -197,15 +350,26 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   greeting: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginTop: 2,
-  },
+  fontSize: 20,
+  color: '#DC2626',       // strong red to highlight greeting
+  fontWeight: '600',
+},
+
+userName: {
+  fontSize: 28,
+  fontWeight: '700',
+  color: '#111827',
+  marginTop: 4,
+},
+
+motivational: {
+  fontSize: 16,
+  fontWeight: '500',
+  color: '#6B7280',       // subtle gray for motivation text
+  marginTop: 6,
+  fontStyle: 'italic',
+},
+
   notificationButton: {
     position: 'relative',
     padding: 8,
@@ -225,6 +389,42 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 10,
     fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)', // dark transparent background
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: 280,
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 25,
+  },
+  notificationText: {
+    fontSize: 14,
+    color: '#B91C1C',          // Dark red text
+    marginBottom: 20,
+    fontWeight: '700',
+    backgroundColor: '#FEE2E2', // Light red/pink background
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    shadowColor: '#B91C1C',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   statusCard: {
     backgroundColor: '#FFFFFF',
@@ -458,5 +658,45 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     marginTop: 2,
+  },
+  label: {
+  fontSize: 14,
+  fontWeight: '600',
+  marginTop: 12,
+  marginBottom: 6,
+  color: '#374151',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: '#111827',
+  },
+  dateTimeButton: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    padding: 12,
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  dateTimeText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  saveButton: {
+    backgroundColor: '#DC2626',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

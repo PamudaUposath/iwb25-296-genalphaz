@@ -1,63 +1,42 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy, Medal, Award, Crown } from 'lucide-react-native';
 
+type User = {
+  rank: number;
+  name: string;
+  points: number;
+  donations: number;
+  bloodType: string;
+  isCurrentUser: boolean;
+};
+
+const leaderboardDataByPeriod: Record<string, User[]> = {
+  Monthly: [
+    { rank: 1, name: 'Kasun Perera', points: 2850, donations: 18, bloodType: 'O-', isCurrentUser: false },
+    { rank: 2, name: 'Nimali Silva', points: 2340, donations: 15, bloodType: 'A+', isCurrentUser: false },
+    { rank: 3, name: 'Rajesh Kumar', points: 1920, donations: 12, bloodType: 'B+', isCurrentUser: false },
+    { rank: 4, name: 'Sarah Williams', points: 1250, donations: 8, bloodType: 'O+', isCurrentUser: true },
+    { rank: 5, name: 'Amal Fernando', points: 1180, donations: 7, bloodType: 'AB+', isCurrentUser: false },
+    { rank: 6, name: 'Priya Jayawardene', points: 980, donations: 6, bloodType: 'A-', isCurrentUser: false },
+  ],
+  Lifetime: [
+    { rank: 1, name: 'Kasun Perera', points: 12450, donations: 180, bloodType: 'O-', isCurrentUser: false },
+    { rank: 2, name: 'Rajesh Kumar', points: 11230, donations: 165, bloodType: 'B+', isCurrentUser: false },
+    { rank: 3, name: 'Nimali Silva', points: 10920, donations: 158, bloodType: 'A+', isCurrentUser: false },
+    { rank: 4, name: 'Sarah Williams', points: 8500, donations: 90, bloodType: 'O+', isCurrentUser: true },
+    { rank: 5, name: 'Amal Fernando', points: 7800, donations: 85, bloodType: 'AB+', isCurrentUser: false },
+    { rank: 6, name: 'Priya Jayawardene', points: 6000, donations: 70, bloodType: 'A-', isCurrentUser: false },
+  ],
+};
+
 export default function LeaderboardScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState('Monthly');
-  
-  const periods = ['Monthly', 'Lifetime', 'Local'];
-  
-  const leaderboardData = [
-    {
-      rank: 1,
-      name: 'Kasun Perera',
-      points: 2850,
-      donations: 18,
-      bloodType: 'O-',
-      isCurrentUser: false,
-    },
-    {
-      rank: 2,
-      name: 'Nimali Silva',
-      points: 2340,
-      donations: 15,
-      bloodType: 'A+',
-      isCurrentUser: false,
-    },
-    {
-      rank: 3,
-      name: 'Rajesh Kumar',
-      points: 1920,
-      donations: 12,
-      bloodType: 'B+',
-      isCurrentUser: false,
-    },
-    {
-      rank: 4,
-      name: 'Sarah Williams',
-      points: 1250,
-      donations: 8,
-      bloodType: 'O+',
-      isCurrentUser: true,
-    },
-    {
-      rank: 5,
-      name: 'Amal Fernando',
-      points: 1180,
-      donations: 7,
-      bloodType: 'AB+',
-      isCurrentUser: false,
-    },
-    {
-      rank: 6,
-      name: 'Priya Jayawardene',
-      points: 980,
-      donations: 6,
-      bloodType: 'A-',
-      isCurrentUser: false,
-    },
-  ];
+
+  const leaderboardData = useMemo(() => leaderboardDataByPeriod[selectedPeriod], [selectedPeriod]);
+
+  const currentUser = leaderboardData.find(u => u.isCurrentUser) ?? leaderboardData[0];
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -76,32 +55,32 @@ export default function LeaderboardScreen() {
     }
   };
 
-  const PeriodButton = ({ title, isSelected, onPress }: any) => (
-    <TouchableOpacity
-      style={[styles.periodButton, isSelected && styles.periodButtonActive]}
+  const PeriodButton = ({ title, isSelected, onPress }: { title: string; isSelected: boolean; onPress: () => void }) => (
+    <Pressable
+      style={({ pressed }) => [
+        styles.periodButton,
+        isSelected && styles.periodButtonActive,
+        pressed && { opacity: 0.7 },
+      ]}
       onPress={onPress}
     >
-      <Text style={[styles.periodText, isSelected && styles.periodTextActive]}>
-        {title}
-      </Text>
-    </TouchableOpacity>
+      <Text style={[styles.periodText, isSelected && styles.periodTextActive]}>{title}</Text>
+    </Pressable>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        {/* Header */}
+      <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text style={styles.title}>Leaderboard</Text>
           <View style={styles.pointsDisplay}>
             <Trophy size={20} color="#DC2626" />
-            <Text style={styles.userPoints}>1,250 pts</Text>
+            <Text style={styles.userPoints}>{currentUser.points.toLocaleString()} pts</Text>
           </View>
         </View>
 
-        {/* Period Selector */}
         <View style={styles.periodSelector}>
-          {periods.map(period => (
+          {Object.keys(leaderboardDataByPeriod).map(period => (
             <PeriodButton
               key={period}
               title={period}
@@ -111,7 +90,6 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        {/* Current User Rank Card */}
         <View style={styles.currentUserCard}>
           <View style={styles.currentUserHeader}>
             <Text style={styles.currentUserTitle}>Your Rank</Text>
@@ -119,26 +97,25 @@ export default function LeaderboardScreen() {
           </View>
           <View style={styles.currentUserStats}>
             <View style={styles.currentUserRank}>
-              <Text style={styles.rankValue}>#4</Text>
+              <Text style={styles.rankValue}>#{currentUser.rank}</Text>
               <Text style={styles.rankLabel}>Rank</Text>
             </View>
             <View style={styles.currentUserPoints}>
-              <Text style={styles.pointsValue}>1,250</Text>
+              <Text style={styles.pointsValue}>{currentUser.points.toLocaleString()}</Text>
               <Text style={styles.pointsLabel}>Points</Text>
             </View>
             <View style={styles.currentUserDonations}>
-              <Text style={styles.donationsValue}>8</Text>
+              <Text style={styles.donationsValue}>{currentUser.donations}</Text>
               <Text style={styles.donationsLabel}>Donations</Text>
             </View>
           </View>
         </View>
 
-        {/* Leaderboard List */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Top Donors</Text>
           {leaderboardData.map(user => (
-            <View 
-              key={user.rank} 
+            <View
+              key={user.rank}
               style={[styles.leaderboardCard, user.isCurrentUser && styles.currentUserHighlight]}
             >
               <View style={styles.leaderboardLeft}>

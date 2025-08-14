@@ -1,0 +1,7 @@
+[build-options]
+observabilityIncluded = true
+
+[package]
+org = "yourorg"
+name = "public_api_service"
+version = "0.1.0"

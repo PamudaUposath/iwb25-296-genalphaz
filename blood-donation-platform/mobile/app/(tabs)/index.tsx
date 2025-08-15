@@ -1,16 +1,25 @@
-import React,{useState} from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Modal, Pressable, TextInput } from 'react-native';
+import React,{useState,useEffect} from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Modal, Pressable, TextInput,TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, Calendar, Award, Clock, MapPin, Droplets } from 'lucide-react-native';
+import { Bell, Calendar, Award, Clock, MapPin, Droplets, Gift, Syringe, Droplet, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+
+
+
 
 export default function HomeScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState('');
-  const [reminderTitle, setReminderTitle] = useState('');
-  const [reminderDate, setReminderDate] = useState<Date | null>(null);
+  // const [reminderTitle, setReminderTitle] = useState('');
+  // const [reminderDate, setReminderDate] = useState<Date | null>(null);
+  const [selectedBloodType, setSelectedBloodType] = useState<string | null>(null);
+  const [donateTo, setDonateTo] = useState<string[]>([]);
+
+
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   type Reminder = { title: string; date: Date };
 
@@ -18,18 +27,18 @@ export default function HomeScreen() {
 
 
 
-  const handleSaveReminder = () => {
-    if (!reminderTitle || !reminderDate) {
-      alert("Please enter title and date/time");
-      return;
-    }
-    const newReminder = { title: reminderTitle, date: reminderDate };
-    setReminders(prev => [...prev, newReminder]);
-    alert(`Reminder "${reminderTitle}" set for ${reminderDate.toLocaleString()}`);
-    setModalVisible(false);
-    setReminderTitle('');
-    setReminderDate(null);
-  };
+  // const handleSaveReminder = () => {
+  //   if (!reminderTitle || !reminderDate) {
+  //     alert("Please enter title and date/time");
+  //     return;
+  //   }
+  //   const newReminder = { title: reminderTitle, date: reminderDate };
+  //   setReminders(prev => [...prev, newReminder]);
+  //   alert(`Reminder "${reminderTitle}" set for ${reminderDate.toLocaleString()}`);
+  //   setModalVisible(false);
+  //   setReminderTitle('');
+  //   setReminderDate(null);
+  // };
 
 
   const router = useRouter();
@@ -63,6 +72,8 @@ export default function HomeScreen() {
     { type: 'AB+', units: 15, status: 'low' },
     { type: 'AB-', units: 3, status: 'urgent' },
   ];
+  
+
 
   const urgentAlerts = [
     {
@@ -70,7 +81,7 @@ export default function HomeScreen() {
       bloodType: 'O+',
       location: 'Colombo General Hospital',
       distance: '2.3 km',
-      urgency: 'Critical',
+      urgency: 'Routine',
       timeLeft: '4 hours'
     },
     {
@@ -89,7 +100,6 @@ export default function HomeScreen() {
   "Blood donation reminder",
   ];
 
-
   const getStockStatusColor = (status: string) => {
     switch (status) {
       case 'urgent': return '#DC2626';
@@ -97,6 +107,39 @@ export default function HomeScreen() {
       default: return '#059669';
     }
   };
+  
+  const bloodTypes = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]; 
+  const bloodCompatibility: Record<string, string[]> = {
+  "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+  "O+": ["O+", "A+", "B+", "AB+"],
+  "A-": ["A-", "A+", "AB-", "AB+"],
+  "A+": ["A+", "AB+"],
+  "B-": ["B-", "B+", "AB-", "AB+"],
+  "B+": ["B+", "AB+"],
+  "AB-": ["AB-", "AB+"],
+  "AB+": ["AB+"]
+  };
+
+  type NotificationItem = {
+  centerName: string;
+  bloodType: string;
+  unitsRequired: number;
+  };
+
+  type Props = {
+  modalVisible: boolean;
+  setModalVisible: (visible: boolean) => void;
+  modalType: 'blood' | 'notification';
+  setModalType: (type: 'blood' | 'notification') => void;
+  notifications: NotificationItem[];
+  };
+
+  useEffect(() => {
+  if (modalVisible && modalType === 'blood') {
+    setSelectedBloodType(null);
+    setDonateTo([]);
+  }
+  }, [modalVisible, modalType]);
 
   const getStockStatusBg = (status: string) => {
     switch (status) {
@@ -130,7 +173,7 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{getGreeting()},</Text>
-            <Text style={styles.userName}>Sarah Williams</Text>
+            <Text style={styles.userName}>Kamal Perera</Text>
             <Text style={styles.motivational}>Give hope, give life.</Text>
             
           </View>
@@ -197,7 +240,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Live Blood Stock */}
+        {/* Live Blood Stock
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Live Blood Stock</Text>
@@ -216,7 +259,7 @@ export default function HomeScreen() {
               </View>
             ))}
           </View>
-        </View>
+        </View> */}
 
         {/* Quick Actions */}
         <View style={styles.section}>
@@ -233,7 +276,7 @@ export default function HomeScreen() {
             <QuickActionCard
               icon={Award}
               title="My Points"
-              subtitle="Total D Points"
+              subtitle="See my leaderboard position"
               color="#059669"
               onPress={goToLeaderboard}
             />
@@ -245,88 +288,119 @@ export default function HomeScreen() {
               onPress={goToProfile}
             />
             <QuickActionCard
-              icon={Bell}
-              title="Reminders"
-              subtitle="Set alerts for donations"
+              icon={Heart}
+              title="Blood Compatibility"
+              subtitle="Find who you can donate to"
               color="#7C3AED"
               onPress={() => {
-                setModalType('reminder');
+                setSelectedBloodType(null); // reset dropdown
+                setDonateTo([]);            // reset list
+                setModalType('blood');
                 setModalVisible(true);
               }}
             />
           </View>
         </View>
         <Modal
-            animationType="fade"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-              <View style={styles.modalContent}>
-                {modalType === 'notification' && (
-                  <>
-                    <Text style={styles.modalTitle}>Notifications</Text>
-                    {notifications.map((notification, index) => (
-                      <Text key={index} style={styles.notificationText}>{notification}</Text>
-                    ))}
-                  </>
-                )}
-                {modalType === 'reminder' && (
-                  <>
-                  <Text style={styles.modalTitle}>Set Reminder</Text>
-                  
-                  <Text style={styles.label}>Reminder Title</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter reminder title"
-                    value={reminderTitle}
-                    onChangeText={setReminderTitle}
-                  />
-
-                  <Text style={styles.label}>Date & Time</Text>
-                  <TouchableOpacity style={styles.dateTimeButton} onPress={() => setShowDatePicker(true)}>
-                    <Text style={styles.dateTimeText}>{reminderDate ? reminderDate.toLocaleString() : "Select date & time"}</Text>
-                  </TouchableOpacity>
-
-                  {showDatePicker && (
-                    <DateTimePicker
-                      value={reminderDate || new Date()}
-                      mode="datetime"
-                      display="default"
-                      onChange={(event, selectedDate) => {
-                        if (event?.type === 'dismissed') {
-                          setShowDatePicker(false);
-                          return;
-                        }
-                        setShowDatePicker(false);
-                        if (selectedDate) setReminderDate(selectedDate);
-                      }}
-                    />
-                  )}
-
-                  <TouchableOpacity style={styles.saveButton} onPress={handleSaveReminder}>
-                    <Text style={styles.saveButtonText}>Save Reminder</Text>
-                  </TouchableOpacity>
-                </>
+      animationType="fade"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <Pressable
+        style={styles.modalOverlay}
+        onPress={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback>
+          <View style={styles.modalContent}>
+            {modalType === 'notification' && (
+              <>
+                <Text style={styles.modalTitle}>Notifications</Text>
                 
+                {/* TODO: Fetch relevant blood requests from backend based on current user's blood type */}
+                {/* Example endpoint: GET /api/notifications?bloodType={currentUserBloodType} */}
+
+                {notifications.length === 0 ? (
+                  <Text style={styles.notificationText}>No notifications</Text>
+                ) : (
+                  <ScrollView style={{ maxHeight: 300 }}>
+                    {notifications.map((item, index) => (
+                      <View key={index} style={styles.notificationItem}>
+                        <Text style={styles.notificationText}>
+                          {item.centerName} requires {item.bloodType} blood
+                        </Text>
+                        <Text style={styles.notificationSubText}>
+                          Units needed: {item.unitsRequired}
+                        </Text>
+                      </View>
+                    ))}
+                  </ScrollView>
                 )}
-                <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+              </>
+            )}
+
+            {modalType === 'blood' && (
+              <>
+                <Text style={styles.modalTitle}>Select Your Blood Type</Text>
+                
+                <View style={styles.bloodTypeGrid}>
+                  {bloodTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      style={[
+                        styles.bloodTypeButton,
+                        selectedBloodType === type && styles.bloodTypeButtonSelected,
+                        selectedBloodType && selectedBloodType !== type && styles.bloodTypeButtonFaded
+                      ]}
+                      onPress={() => {
+                        setSelectedBloodType(type);
+                        setDonateTo(bloodCompatibility[type]);
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.bloodTypeText,
+                          selectedBloodType === type && styles.bloodTypeTextSelected
+                        ]}
+                      >
+                        {type}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                {selectedBloodType && (
+                  <View style={styles.resultCard}>
+                    <Text style={styles.resultTitle}>You can donate to:</Text>
+                    <View style={styles.resultList}>
+                      {donateTo.map((type) => (
+                        <View key={type} style={styles.resultItem}>
+                          <Text style={styles.resultItemText}>{type}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </>
+            )}
+
+                {/* <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
                   <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>Your Reminders:</Text>
                   {reminders.length === 0 ? (
                     <Text>No reminders set</Text>
                   ) : (
                     reminders.map((reminder, index) => (
-                      <View key={index} style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 8, marginBottom: 8 }}>
+                      <View key={index} style={{ padding: 10, backgroundColor: '#f0f0f0',  borderRadius: 8, marginBottom: 8 }}>
                         <Text style={{ fontWeight: '600' }}>{reminder.title}</Text>
                         <Text>{reminder.date.toLocaleString()}</Text>
                       </View>
                     ))
                   )}
-                </View>
+                </View> */}
               </View>
-            </Pressable>
-          </Modal>
+            </TouchableWithoutFeedback>
+          </Pressable>
+        </Modal>
 
       </ScrollView>
     </SafeAreaView>
@@ -350,10 +424,59 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   greeting: {
-  fontSize: 20,
-  color: '#DC2626',       // strong red to highlight greeting
-  fontWeight: '600',
-},
+    fontSize: 20,
+    color: '#DC2626',       // strong red to highlight greeting
+    fontWeight: '600',
+  },
+
+  picker: {
+    height: 50,
+    width: '100%',
+
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  compatibleTypeText: {
+    fontSize: 16,
+    marginVertical: 2,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 20,
+  },
+  modalBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+
+  notificationItem: {
+    backgroundColor: '#FEE2E2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  notificationSubText: {
+    color: '#DC2626',
+    opacity: 0.8,
+    marginTop: 4,
+  },
+
 
 userName: {
   fontSize: 28,
@@ -390,27 +513,75 @@ motivational: {
     fontSize: 10,
     fontWeight: 'bold',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)', // dark transparent background
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#DC2626',
+  },
+  bloodTypeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'center',
+    marginBottom: 20,
+  },
+
+  bloodTypeButton: {
+    borderWidth: 2,
+    borderColor: '#DC2626',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    margin: 6,
+    backgroundColor: 'white',
+  },
+  bloodTypeButtonSelected: {
+    backgroundColor: '#DC2626',
+  },
+  bloodTypeButtonFaded: {
+    opacity: 0.3,
+  },
+  bloodTypeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#DC2626',
+  },
+  bloodTypeTextSelected: {
+    color: 'white',
+  },
+
+  resultCard: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#FEE2E2', // light red background
+    borderRadius: 10,
+    width: '100%',
     alignItems: 'center',
   },
-  modalContent: {
-    width: 280,
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 25,
+  resultTitle: {
     fontWeight: 'bold',
-    marginBottom: 25,
+    fontSize: 16,
+    color: '#000000',
+    marginBottom: 10,
   },
+  resultList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  resultItem: {
+    backgroundColor: 'green',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    margin: 4,
+  },
+  resultItemText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  
   notificationText: {
     fontSize: 14,
     color: '#B91C1C',          // Dark red text

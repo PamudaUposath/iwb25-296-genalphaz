@@ -27,6 +27,14 @@ docker exec -it backend-postgres-1 psql -U postgres -d lankadonate
 \dn
 \q
 
+Add data to the database using the provided SQL file (if you are in the backend folder):
+type database\seed\demo_data.sql | docker exec -i backend-postgres-1 psql -U postgres -d lankadonate
+
+Delete Tables:
+type database\migrations\delete.sql | docker exec -i backend-postgres-1 psql -U postgres -d lankadonate
+
+
+
 ## 3. Test the APIs
 
 Once the container and database are ready, run the backend and test the APIs.

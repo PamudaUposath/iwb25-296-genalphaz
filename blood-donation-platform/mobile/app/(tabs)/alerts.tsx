@@ -26,7 +26,7 @@ export default function AlertsScreen() {
   // Animated value for filter height
   const filterHeight = useRef(new Animated.Value(0)).current;
 
-  const filters = ['All', 'O+', 'Critical', 'Nearby'];
+  const filters = ['All', 'O+', 'Routine', 'Nearby'];
 
   const alerts = [
     {
@@ -35,7 +35,7 @@ export default function AlertsScreen() {
       location: 'Colombo General Hospital',
       address: '282 Colombo 8, Sri Lanka',
       distance: '2.3 km',
-      urgency: 'Critical',
+      urgency: 'Routine',
       timeLeft: '4 hours',
       unitsNeeded: 3,
       hospital: 'CGH',
@@ -57,7 +57,7 @@ export default function AlertsScreen() {
       location: 'Teaching Hospital Karapitiya',
       address: 'Karapitiya, Galle',
       distance: '120 km',
-      urgency: 'Critical',
+      urgency: 'Routine',
       timeLeft: '6 hours',
       unitsNeeded: 5,
       hospital: 'THK',
@@ -88,17 +88,25 @@ export default function AlertsScreen() {
       const distanceNum = parseFloat(alert.distance);
       return distanceNum <= 10; // nearby = within 10 km
     }
-    if (selectedFilter === 'Critical') {
-      return alert.urgency === 'Critical';
+    if (selectedFilter === 'Routine') {
+      return alert.urgency === 'Routine';
     }
     // blood types
     return alert.bloodType === selectedFilter;
   });
 
-  const getUrgencyColor = (urgency: string) => (urgency === 'Critical' ? '#DC2626' : '#F59E0B');
+  const getUrgencyColor = (urgency: string) => {
+    if (urgency === 'Urgent') return '#DC2626'; // orange-brown
+    if (urgency === 'Routine') return '#7c4700'; // brown
+    return '#6B7280'; // default gray
+  };
 
-  const getUrgencyBg = (urgency: string) => (urgency === 'Critical' ? '#FEE2E2' : '#FEF3C7');
-
+  const getUrgencyBg = (urgency: string) => {
+    if (urgency === 'Urgent') return '#FEE2E2'; // light yellow
+    if (urgency === 'Routine') return '#fff9c4'; // yellow
+    return '#F3F4F6'; // default bg
+  };
+  
   const FilterButton = ({ title, isSelected, onPress }: any) => (
     <TouchableOpacity
       style={[styles.filterButton, isSelected && styles.filterButtonActive]}

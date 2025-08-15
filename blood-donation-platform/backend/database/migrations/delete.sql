@@ -1,0 +1,8 @@
+-- Drop dependent tables first
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS donations CASCADE;
+DROP TABLE IF EXISTS qr_tokens CASCADE;
+DROP TABLE IF EXISTS blood_requirements CASCADE;
+DROP TABLE IF EXISTS center_blood_stock CASCADE;
+DROP TABLE IF EXISTS donors CASCADE;
+DROP TABLE IF EXISTS centers CASCADE;

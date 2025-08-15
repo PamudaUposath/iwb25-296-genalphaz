@@ -6,7 +6,7 @@
 
 Navigate to the **backend** folder from the location where your GitHub repository is initialized, and build the container:
 
-docker build -t backend-app .
+docker-compose up -d --build.
 
 This will create 6 images inside the "backend" container .  make sure all the images are running. 
 

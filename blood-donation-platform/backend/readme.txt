@@ -6,7 +6,7 @@
 
 Navigate to the **backend** folder from the location where your GitHub repository is initialized, and build the container:
 
-docker-compose up -d --build.
+docker compose up --build -d
 
 This will create 6 images inside the "backend" container .  make sure all the images are running. 
 
@@ -16,10 +16,16 @@ This will create 6 images inside the "backend" container .  make sure all the im
 Use the provided SQL file to create the database:
 
 psql -U <username> -d <database_name> -f path/to/database.sql
+docker exec -it backend-postgres-1 psql -U postgres -d lankadonate
 
 > Replace `<username>` and `<database_name>` with your actual PostgreSQL username and database name.
+type database\migrations\001_init.sql | docker exec -i backend-postgres-1 psql -U postgres -d lankadonate
 
-
+Check whether the database is created successfully by running:
+docker exec -it backend-postgres-1 psql -U postgres -d lankadonate
+\dt
+\dn
+\q
 
 ## 3. Test the APIs
 
@@ -27,7 +33,7 @@ Once the container and database are ready, run the backend and test the APIs.
 
 To ensure everything works fine, visit:
 
-http://localhost:8081/health or http://localhost:8081/health 
+http://localhost:8081/health
 
 You should see a JSON reply:
 

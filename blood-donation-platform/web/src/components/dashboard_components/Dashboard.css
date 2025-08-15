@@ -294,3 +294,293 @@ table button:hover {
   border-radius: 10px;
   overflow: hidden;
 }
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0;
+    min-height: auto;
+  }
+
+  .sidebar .logo {
+    flex: 1;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .sidebar ul li {
+    flex: 0 0 auto;
+    padding: 10px 15px;
+    margin: 0 5px;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .stock-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stock-item {
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .stock-bar {
+    width: 30px;
+    height: 150px;
+  }
+
+  table {
+    font-size: 0.8rem;
+  }
+
+  table th, table td {
+    padding: 5px;
+  }
+
+  .donation-form, .blood-request-form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .qr-scanner {
+    width: 100%;
+  }
+}
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Mobile dropdown menu for Dashboard tabs */
+.mobile-menu {
+  display: none; /* Hidden by default on desktop */
+  margin-bottom: 10px;
+}
+
+.mobile-menu select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #b30000;
+  font-size: 1rem;
+  background-color: white;
+  color: #b30000;
+  cursor: pointer;
+}
+
+/* Show mobile dropdown on screens <= 768px */
+@media screen and (max-width: 768px) {
+  .mobile-menu {
+    display: block;
+  }
+
+  .sidebar ul {
+    display: none; /* Hide default sidebar links on mobile */
+  }
+}
+.mobile-menu {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.mobile-menu select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+/* Mobile-specific header and footer styles */
+@media screen and (max-width: 768px) {
+  .mobile-header {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #b30000;
+    margin-bottom: 10px;
+  }
+
+  .mobile-dropdown {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .mobile-dropdown select {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #b30000;
+    background-color: #fff5f5;
+    color: #b30000;
+    font-size: 1.1rem;
+    font-weight: bold;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(179, 0, 0, 0.07);
+    position: relative;
+  }
+
+  /* Custom dropdown arrow */
+  .mobile-dropdown {
+    position: relative;
+  }
+
+  .mobile-dropdown select:focus {
+    border-color: #d32f2f;
+    outline: none;
+    box-shadow: 0 0 0 2px #b3000044;
+  }
+
+  /* Add a custom arrow using a pseudo-element */
+  .mobile-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #b30000;
+    transform: translateY(-50%);
+  }
+
+  .mobile-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    z-index: 100;
+    text-align: center;
+  }
+
+  .mobile-footer button {
+    background-color: white;
+    color: #b30000;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .mobile-footer button:hover {
+    background-color: #f1f1f1;
+  }
+
+  .signout-btn {
+    width: 100%;
+    padding: 10px;
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Only show footer on mobile */
+  @media (min-width: 769px) {
+    .mobile-footer {
+      display: none;
+    }
+  }
+}
+/* =======================
+   DONOR WINDOW STYLES
+======================= */
+
+/* Blocked Donor Button */
+.blocked-donor-btn {
+  background-color: #ff4444; /* bright red to signal warning */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.blocked-donor-btn:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+/* Optional disabled/blocked state */
+.blocked-donor-btn.disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+/* Reason Input for Blocked Donor */
+.blocked-reason-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+/* Donor Action Buttons Container */
+.donor-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Table adjustments for mobile */
+@media (max-width: 768px) {
+  .donor-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .blocked-reason-input {
+    font-size: 0.85rem;
+  }
+}
+
+
+

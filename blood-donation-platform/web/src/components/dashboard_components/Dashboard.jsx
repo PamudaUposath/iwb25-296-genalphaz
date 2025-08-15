@@ -1,10 +1,10 @@
 // src/components/Dashboard.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // <-- Added useEffect
 import "./Dashboard.css";
 import BloodRequestForm from "./BloodRequestForm";
 // TODO: Replace with actual backend endpoint for sign out
 // const BACKEND_SIGNOUT_ENDPOINT = 'http://localhost:5000/api/signout'; // <-- Update this when backend is ready
-import { QrReader } from 'react-qr-reader'; // Install with: npm install react-qr-reader
+import { QrReader } from 'react-qr-scanner'; // Install with: npm install react-qr-reader
 
 export default function Dashboard({ center, onSignOut }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -20,6 +20,15 @@ export default function Dashboard({ center, onSignOut }) {
     "O-": 3,
     "A-": 2,
   });
+
+  // ----------------- MOBILE RESPONSIVENESS -----------------
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // ----------------- Requests -----------------
   const approveRequest = (id) => {
@@ -67,6 +76,9 @@ export default function Dashboard({ center, onSignOut }) {
   });
   const [scanQR, setScanQR] = useState(false);
 
+  // --- New State for Donor Status List ---
+  const [donationsList, setDonationsList] = useState([]);
+
   const handleDonationChange = (e) => {
     const { name, value } = e.target;
     setDonationData(prev => ({ ...prev, [name]: value }));
@@ -85,23 +97,77 @@ export default function Dashboard({ center, onSignOut }) {
 
     setStock(prev => ({ ...prev, [bloodType]: prev[bloodType] + parseInt(units) }));
     alert(`Donation recorded for ${nic}!`);
+    setDonationsList(prev => [...prev, { id: Date.now(), nic, bloodType, units, status: "Accepted", reason: "" }]);
     setDonationData({ nic: "", bloodType: "O+", units: "" });
     setScanQR(false);
+  };
+
+  // --- New Actions for Blocking Donors ---
+  const handleTempBlockDonation = (id) => {
+    const reason = prompt("Enter reason for temporarily blocking this donor:");
+    if (!reason) return;
+    setDonationsList(prev =>
+      prev.map(d => (d.id === id ? { ...d, status: "Temporarily Blocked", reason } : d))
+    );
+  };
+
+  const handlePermanentBlockDonation = (id) => {
+    const reason = prompt("Enter reason for permanently blocking this donor:");
+    if (!reason) return;
+    setDonationsList(prev =>
+      prev.map(d => (d.id === id ? { ...d, status: "Permanently Blocked", reason } : d))
+    );
+  };
+
+  const handleAcceptDonation = (id) => {
+    setDonationsList(prev =>
+      prev.map(d => (d.id === id ? { ...d, status: "Accepted", reason: "" } : d))
+    );
   };
 
   return (
     <div className="dashboard">
       <aside className="sidebar">
-        <h2 className="logo">Blood Bank Center</h2>
-        <ul style={{ flex: 1 }}>
-          <li className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</li>
-          <li className={activeTab === "requests" ? "active" : ""} onClick={() => setActiveTab("requests")}>Requests</li>
-          <li className={activeTab === "stock" ? "active" : ""} onClick={() => setActiveTab("stock")}>Stock</li>
-          <li className={activeTab === "donations" ? "active" : ""} onClick={() => setActiveTab("donations")}>Record Donation</li>
-        </ul>
-        <button class="signout-btn" onClick={onSignOut} style={{ marginBottom: '10%', padding: '8px 16px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>
-          Sign Out
-        </button>
+        {/* ----------- MOBILE HEADER + DROPDOWN ----------- */}
+        {isMobile ? (
+          <div style={{ width: '100%', padding: '10px', background: '#b71c1c', color: '#fff', textAlign: 'center' }}>
+            <h2 style={{ margin: 0 }}>Blood Bank Center</h2>
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px',
+                marginTop: '10px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                fontSize: '16px'
+              }}
+            >
+              <option value="overview">Overview</option>
+              <option value="requests">Requests</option>
+              <option value="stock">Stock</option>
+              <option value="donations">Record Donation</option>
+            </select>
+          </div>
+        ) : (
+          <>
+            <h2 className="logo">Blood Bank Center</h2>
+            <ul style={{ flex: 1 }}>
+              <li className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</li>
+              <li className={activeTab === "requests" ? "active" : ""} onClick={() => setActiveTab("requests")}>Requests</li>
+              <li className={activeTab === "stock" ? "active" : ""} onClick={() => setActiveTab("stock")}>Stock</li>
+              <li className={activeTab === "donations" ? "active" : ""} onClick={() => setActiveTab("donations")}>Record Donation</li>
+            </ul>
+          </>
+        )}
+
+        {/* ----------- SIGN OUT BUTTON (MOBILE: FOOTER) ----------- */}
+        {!isMobile && (
+          <button class="signout-btn" onClick={onSignOut} style={{ marginBottom: '10%', padding: '8px 16px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>
+            Sign Out
+          </button>
+        )}
       </aside>
 
       <main className="main-content">
@@ -131,33 +197,35 @@ export default function Dashboard({ center, onSignOut }) {
           <section className="requests">
             <BloodRequestForm onAddRequest={addRequest} />
             <h1>Manage Requests</h1>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Blood Type</th>
-                  <th>Units</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.map((req) => (
-                  <tr key={req.id}>
-                    <td>{req.id}</td>
-                    <td>{req.bloodType}</td>
-                    <td>{req.units}</td>
-                    <td>{req.status}</td>
-                    <td>
-                      <button onClick={() => approveRequest(req.id)}>Approve</button>
-                      <button onClick={() => markUrgent(req.id)}>Mark Urgent</button>
-                      <button onClick={() => editRequest(req.id)}>Edit</button>
-                      <button onClick={() => deleteRequest(req.id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              <div className = "table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Blood Type</th>
+                      <th>Units</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requests.map((req) => (
+                      <tr key={req.id}>
+                        <td>{req.id}</td>
+                        <td>{req.bloodType}</td>
+                        <td>{req.units}</td>
+                        <td>{req.status}</td>
+                        <td>
+                          <button onClick={() => approveRequest(req.id)}>Approve</button>
+                          <button onClick={() => markUrgent(req.id)}>Mark Urgent</button>
+                          <button onClick={() => editRequest(req.id)}>Edit</button>
+                          <button onClick={() => deleteRequest(req.id)}>Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
           </section>
         )}
 
@@ -218,9 +286,55 @@ export default function Dashboard({ center, onSignOut }) {
               <input type="number"  min="1" name="units" value={donationData.units} onChange={handleDonationChange} />
               <button onClick={submitDonation}>Submit Donation</button>
             </div>
+
+            {/* --- Donor Table with Actions --- */}
+            {donationsList.length > 0 && (
+              <div style={{ marginTop: "20px" }}>
+                <h2>Donor Records</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>NIC</th>
+                      <th>Blood Type</th>
+                      <th>Units</th>
+                      <th>Status</th>
+                      <th>Reason</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {donationsList.map((donor) => (
+                      <tr key={donor.id}>
+                        <td>{donor.nic}</td>
+                        <td>{donor.bloodType}</td>
+                        <td>{donor.units}</td>
+                        <td>{donor.status}</td>
+                        <td>{donor.reason}</td>
+                        <td>
+                          <button onClick={() => handleAcceptDonation(donor.id)}>Accept</button>
+                          <button onClick={() => handleTempBlockDonation(donor.id)}>Temp Block</button>
+                          <button onClick={() => handlePermanentBlockDonation(donor.id)}>Perm Block</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         )}
       </main>
+      {/* --- Fixed Footer Sign Out Button for Mobile --- */}
+      {isMobile && (
+        <footer className="mobile-footer">
+          <button
+            className="signout-btn"
+            onClick={onSignOut}
+          >
+            Sign Out
+          </button>
+        </footer>
+      )}
     </div>
   );
 }

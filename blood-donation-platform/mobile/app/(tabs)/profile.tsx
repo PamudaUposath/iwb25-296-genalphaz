@@ -29,12 +29,16 @@ type Donation = {
   points: number;
   certificate: boolean;
 };
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
   const [showAllDonations, setShowAllDonations] = React.useState(false);
   const [detailDonation, setDetailDonation] = React.useState(null);
   const [editProfileVisible, setEditProfileVisible] = React.useState(false);
-
+  const router = useRouter();
+  const handleLogout = () => {
+    router.replace('/');
+  };
   // Profile state to enable editing
   const [profile, setProfile] = React.useState({
     name: 'Sarah Williams',
@@ -47,8 +51,7 @@ export default function ProfileScreen() {
     totalPoints: 1250,
     certificates: 3,
   });
-  
-  
+
   const [editProfileData, setEditProfileData] = React.useState(profile);
 
   const donationHistory = [
@@ -106,7 +109,6 @@ export default function ProfileScreen() {
       {subtitle && <Text style={styles.statSubtitle}>{subtitle}</Text>}
     </View>
   );
-  
 
   const getDaysUntilEligible = () => {
     const nextDate = new Date(profile.nextEligible);
@@ -285,6 +287,10 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           {/* Removed Donation Schedule and Download All Certificates */}
         </View>
+        {/*Logout Button*/}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Donation Details Modal */}
@@ -654,6 +660,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 8,
+  },
+
+  logoutButton: {
+    backgroundColor: '#DC2626',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 15,
+    marginRight: 15,
+    paddingVertical: 20,
+    marginBottom:15,
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   buttonText: {

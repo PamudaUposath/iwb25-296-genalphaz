@@ -1,31 +1,49 @@
-import React,{useState,useEffect} from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Modal, Pressable, TextInput,TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  Modal,
+  Pressable,
+  TextInput,
+  TouchableWithoutFeedback,
+  Button,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, Calendar, Award, Clock, MapPin, Droplets, Gift, Syringe, Droplet, Heart } from 'lucide-react-native';
+import {
+  Bell,
+  Calendar,
+  Award,
+  Clock,
+  MapPin,
+  Droplets,
+  Gift,
+  Syringe,
+  Droplet,
+  Heart,
+} from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-
-
-
+import { useAuth } from '../../context/AuthContext'; 
 
 export default function HomeScreen() {
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState('');
   // const [reminderTitle, setReminderTitle] = useState('');
   // const [reminderDate, setReminderDate] = useState<Date | null>(null);
-  const [selectedBloodType, setSelectedBloodType] = useState<string | null>(null);
+  const [selectedBloodType, setSelectedBloodType] = useState<string | null>(
+    null
+  );
   const [donateTo, setDonateTo] = useState<string[]>([]);
-
-
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   type Reminder = { title: string; date: Date };
 
   const [reminders, setReminders] = useState<Reminder[]>([]);
-
-
 
   // const handleSaveReminder = () => {
   //   if (!reminderTitle || !reminderDate) {
@@ -40,28 +58,35 @@ export default function HomeScreen() {
   //   setReminderDate(null);
   // };
 
-
   const router = useRouter();
+//   const { user } = useAuth();
+// useEffect(() => {
+//     if (user) {
+//       router.replace('/(tabs)/index'); // go to tabs if logged in
+//     } else {
+//       router.replace('/signin'); // otherwise signin
+//     }
+//   }, [user]);
 
+//  return null; 
   const handleOpenExternal = () => {
     Linking.openURL('https://raktha.nbts.health.gov.lk/welcome');
   };
 
   const goToLeaderboard = () => {
-  router.push('/leaderboard');
-  };
-  
-  const goToProfile = () => {
-  router.push('/profile');
-  };
-  
-  const goToAlerts = () => {
-  router.push('/alerts');
+    router.push('/leaderboard');
   };
 
+  const goToProfile = () => {
+    router.push('/profile');
+  };
+
+  const goToAlerts = () => {
+    router.push('/alerts');
+  };
 
   const userBloodType = 'O+';
-  
+
   const bloodStock = [
     { type: 'O+', units: 45, status: 'normal' },
     { type: 'O-', units: 12, status: 'urgent' },
@@ -72,8 +97,6 @@ export default function HomeScreen() {
     { type: 'AB+', units: 15, status: 'low' },
     { type: 'AB-', units: 3, status: 'urgent' },
   ];
-  
-
 
   const urgentAlerts = [
     {
@@ -82,7 +105,7 @@ export default function HomeScreen() {
       location: 'Colombo General Hospital',
       distance: '2.3 km',
       urgency: 'Routine',
-      timeLeft: '4 hours'
+      timeLeft: '4 hours',
     },
     {
       id: 2,
@@ -90,66 +113,78 @@ export default function HomeScreen() {
       location: 'Lady Ridgeway Hospital',
       distance: '5.7 km',
       urgency: 'Urgent',
-      timeLeft: '12 hours'
-    }
+      timeLeft: '12 hours',
+    },
   ];
-  
+
   const notifications = [
-  "You have 3 new alerts",
-  "Appointment confirmed",
-  "Blood donation reminder",
+    'You have 3 new alerts',
+    'Appointment confirmed',
+    'Blood donation reminder',
   ];
 
   const getStockStatusColor = (status: string) => {
     switch (status) {
-      case 'urgent': return '#DC2626';
-      case 'low': return '#F59E0B';
-      default: return '#059669';
+      case 'urgent':
+        return '#DC2626';
+      case 'low':
+        return '#F59E0B';
+      default:
+        return '#059669';
     }
   };
-  
-  const bloodTypes = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]; 
+
+  const bloodTypes = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
   const bloodCompatibility: Record<string, string[]> = {
-  "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
-  "O+": ["O+", "A+", "B+", "AB+"],
-  "A-": ["A-", "A+", "AB-", "AB+"],
-  "A+": ["A+", "AB+"],
-  "B-": ["B-", "B+", "AB-", "AB+"],
-  "B+": ["B+", "AB+"],
-  "AB-": ["AB-", "AB+"],
-  "AB+": ["AB+"]
+    'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+    'O+': ['O+', 'A+', 'B+', 'AB+'],
+    'A-': ['A-', 'A+', 'AB-', 'AB+'],
+    'A+': ['A+', 'AB+'],
+    'B-': ['B-', 'B+', 'AB-', 'AB+'],
+    'B+': ['B+', 'AB+'],
+    'AB-': ['AB-', 'AB+'],
+    'AB+': ['AB+'],
   };
 
   type NotificationItem = {
-  centerName: string;
-  bloodType: string;
-  unitsRequired: number;
+    centerName: string;
+    bloodType: string;
+    unitsRequired: number;
   };
 
   type Props = {
-  modalVisible: boolean;
-  setModalVisible: (visible: boolean) => void;
-  modalType: 'blood' | 'notification';
-  setModalType: (type: 'blood' | 'notification') => void;
-  notifications: NotificationItem[];
+    modalVisible: boolean;
+    setModalVisible: (visible: boolean) => void;
+    modalType: 'blood' | 'notification';
+    setModalType: (type: 'blood' | 'notification') => void;
+    notifications: NotificationItem[];
   };
 
   useEffect(() => {
-  if (modalVisible && modalType === 'blood') {
-    setSelectedBloodType(null);
-    setDonateTo([]);
-  }
+    if (modalVisible && modalType === 'blood') {
+      setSelectedBloodType(null);
+      setDonateTo([]);
+    }
   }, [modalVisible, modalType]);
 
   const getStockStatusBg = (status: string) => {
     switch (status) {
-      case 'urgent': return '#FEE2E2';
-      case 'low': return '#FEF3C7';
-      default: return '#D1FAE5';
+      case 'urgent':
+        return '#FEE2E2';
+      case 'low':
+        return '#FEF3C7';
+      default:
+        return '#D1FAE5';
     }
   };
 
-  const QuickActionCard = ({ icon: Icon, title, subtitle, onPress, color = '#DC2626' }: any) => (
+  const QuickActionCard = ({
+    icon: Icon,
+    title,
+    subtitle,
+    onPress,
+    color = '#DC2626',
+  }: any) => (
     <TouchableOpacity style={styles.quickActionCard} onPress={onPress}>
       <View style={[styles.quickActionIcon, { backgroundColor: color + '15' }]}>
         <Icon size={24} color={color} />
@@ -160,11 +195,11 @@ export default function HomeScreen() {
   );
 
   const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  else if (hour < 18) return "Good Afternoon";
-  else return "Good Evening";
-};
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    else if (hour < 18) return 'Good Afternoon';
+    else return 'Good Evening';
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -175,7 +210,6 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>{getGreeting()},</Text>
             <Text style={styles.userName}>Kamal Perera</Text>
             <Text style={styles.motivational}>Give hope, give life.</Text>
-            
           </View>
           <TouchableOpacity
             style={styles.notificationButton}
@@ -186,11 +220,13 @@ export default function HomeScreen() {
           >
             <Bell size={24} color="#374151" />
             <View style={styles.notificationBadge}>
-              <Text style={styles.notificationCount}>{notifications.length}</Text>
+              <Text style={styles.notificationCount}>
+                {notifications.length}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
-
+        
         {/* Blood Type & Eligibility Status */}
         <View style={styles.statusCard}>
           <View style={styles.statusHeader}>
@@ -216,10 +252,12 @@ export default function HomeScreen() {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Urgent Alerts</Text>
               <TouchableOpacity>
-                <Text style={styles.seeAllText} onPress={goToAlerts}>See all</Text>
+                <Text style={styles.seeAllText} onPress={goToAlerts}>
+                  See all
+                </Text>
               </TouchableOpacity>
             </View>
-            {urgentAlerts.slice(0, 2).map(alert => (
+            {urgentAlerts.slice(0, 2).map((alert) => (
               <View key={alert.id} style={styles.alertCard}>
                 <View style={styles.alertHeader}>
                   <View style={styles.urgencyBadge}>
@@ -232,8 +270,12 @@ export default function HomeScreen() {
                   <Text style={styles.alertLocationText}>{alert.location}</Text>
                 </View>
                 <View style={styles.alertFooter}>
-                  <Text style={styles.alertDistance}>Approximately {alert.distance} away</Text>
-                  <Text style={styles.alertTime}>Needed in {alert.timeLeft}</Text>
+                  <Text style={styles.alertDistance}>
+                    Approximately {alert.distance} away
+                  </Text>
+                  <Text style={styles.alertTime}>
+                    Needed in {alert.timeLeft}
+                  </Text>
                 </View>
               </View>
             ))}
@@ -264,7 +306,7 @@ export default function HomeScreen() {
         {/* Quick Actions */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
           </View>
           <View style={styles.quickActionsGrid}>
             <QuickActionCard
@@ -294,7 +336,7 @@ export default function HomeScreen() {
               color="#7C3AED"
               onPress={() => {
                 setSelectedBloodType(null); // reset dropdown
-                setDonateTo([]);            // reset list
+                setDonateTo([]); // reset list
                 setModalType('blood');
                 setModalVisible(true);
               }}
@@ -302,87 +344,97 @@ export default function HomeScreen() {
           </View>
         </View>
         <Modal
-      animationType="fade"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
-      <Pressable
-        style={styles.modalOverlay}
-        onPress={() => setModalVisible(false)}
-      >
-        <TouchableWithoutFeedback>
-          <View style={styles.modalContent}>
-            {modalType === 'notification' && (
-              <>
-                <Text style={styles.modalTitle}>Notifications</Text>
-                
-                {/* TODO: Fetch relevant blood requests from backend based on current user's blood type */}
-                {/* Example endpoint: GET /api/notifications?bloodType={currentUserBloodType} */}
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setModalVisible(false)}
+          >
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
+                {modalType === 'notification' && (
+                  <>
+                    <Text style={styles.modalTitle}>Notifications</Text>
 
-                {notifications.length === 0 ? (
-                  <Text style={styles.notificationText}>No notifications</Text>
-                ) : (
-                  <ScrollView style={{ maxHeight: 300 }}>
-                    {notifications.map((item, index) => (
-                      <View key={index} style={styles.notificationItem}>
-                        <Text style={styles.notificationText}>
-                          {item.centerName} requires {item.bloodType} blood
-                        </Text>
-                        <Text style={styles.notificationSubText}>
-                          Units needed: {item.unitsRequired}
-                        </Text>
-                      </View>
-                    ))}
-                  </ScrollView>
-                )}
-              </>
-            )}
+                    {/* TODO: Fetch relevant blood requests from backend based on current user's blood type */}
+                    {/* Example endpoint: GET /api/notifications?bloodType={currentUserBloodType} */}
 
-            {modalType === 'blood' && (
-              <>
-                <Text style={styles.modalTitle}>Select Your Blood Type</Text>
-                
-                <View style={styles.bloodTypeGrid}>
-                  {bloodTypes.map((type) => (
-                    <TouchableOpacity
-                      key={type}
-                      style={[
-                        styles.bloodTypeButton,
-                        selectedBloodType === type && styles.bloodTypeButtonSelected,
-                        selectedBloodType && selectedBloodType !== type && styles.bloodTypeButtonFaded
-                      ]}
-                      onPress={() => {
-                        setSelectedBloodType(type);
-                        setDonateTo(bloodCompatibility[type]);
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.bloodTypeText,
-                          selectedBloodType === type && styles.bloodTypeTextSelected
-                        ]}
-                      >
-                        {type}
+                    {notifications.length === 0 ? (
+                      <Text style={styles.notificationText}>
+                        No notifications
                       </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                    ) : (
+                      <ScrollView style={{ maxHeight: 300 }}>
+                        {notifications.map((item, index) => (
+                          <View key={index} style={styles.notificationItem}>
+                            <Text style={styles.notificationText}>
+                              {item.centerName} requires {item.bloodType} blood
+                            </Text>
+                            <Text style={styles.notificationSubText}>
+                              Units needed: {item.unitsRequired}
+                            </Text>
+                          </View>
+                        ))}
+                      </ScrollView>
+                    )}
+                  </>
+                )}
 
-                {selectedBloodType && (
-                  <View style={styles.resultCard}>
-                    <Text style={styles.resultTitle}>You can donate to:</Text>
-                    <View style={styles.resultList}>
-                      {donateTo.map((type) => (
-                        <View key={type} style={styles.resultItem}>
-                          <Text style={styles.resultItemText}>{type}</Text>
-                        </View>
+                {modalType === 'blood' && (
+                  <>
+                    <Text style={styles.modalTitle}>
+                      Select Your Blood Type
+                    </Text>
+
+                    <View style={styles.bloodTypeGrid}>
+                      {bloodTypes.map((type) => (
+                        <TouchableOpacity
+                          key={type}
+                          style={[
+                            styles.bloodTypeButton,
+                            selectedBloodType === type &&
+                              styles.bloodTypeButtonSelected,
+                            selectedBloodType &&
+                              selectedBloodType !== type &&
+                              styles.bloodTypeButtonFaded,
+                          ]}
+                          onPress={() => {
+                            setSelectedBloodType(type);
+                            setDonateTo(bloodCompatibility[type]);
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.bloodTypeText,
+                              selectedBloodType === type &&
+                                styles.bloodTypeTextSelected,
+                            ]}
+                          >
+                            {type}
+                          </Text>
+                        </TouchableOpacity>
                       ))}
                     </View>
-                  </View>
+
+                    {selectedBloodType && (
+                      <View style={styles.resultCard}>
+                        <Text style={styles.resultTitle}>
+                          You can donate to:
+                        </Text>
+                        <View style={styles.resultList}>
+                          {donateTo.map((type) => (
+                            <View key={type} style={styles.resultItem}>
+                              <Text style={styles.resultItemText}>{type}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    )}
+                  </>
                 )}
-              </>
-            )}
 
                 {/* <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
                   <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 8 }}>Your Reminders:</Text>
@@ -401,7 +453,6 @@ export default function HomeScreen() {
             </TouchableWithoutFeedback>
           </Pressable>
         </Modal>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -425,7 +476,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 20,
-    color: '#DC2626',       // strong red to highlight greeting
+    color: '#DC2626', // strong red to highlight greeting
     fontWeight: '600',
   },
 
@@ -477,21 +528,20 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
+  userName: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 4,
+  },
 
-userName: {
-  fontSize: 28,
-  fontWeight: '700',
-  color: '#111827',
-  marginTop: 4,
-},
-
-motivational: {
-  fontSize: 16,
-  fontWeight: '500',
-  color: '#6B7280',       // subtle gray for motivation text
-  marginTop: 6,
-  fontStyle: 'italic',
-},
+  motivational: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#6B7280', // subtle gray for motivation text
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
 
   notificationButton: {
     position: 'relative',
@@ -581,10 +631,10 @@ motivational: {
     color: 'white',
     fontWeight: 'bold',
   },
-  
+
   notificationText: {
     fontSize: 14,
-    color: '#B91C1C',          // Dark red text
+    color: '#B91C1C', // Dark red text
     marginBottom: 20,
     fontWeight: '700',
     backgroundColor: '#FEE2E2', // Light red/pink background
@@ -831,11 +881,11 @@ motivational: {
     marginTop: 2,
   },
   label: {
-  fontSize: 14,
-  fontWeight: '600',
-  marginTop: 12,
-  marginBottom: 6,
-  color: '#374151',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 12,
+    marginBottom: 6,
+    color: '#374151',
   },
   input: {
     borderWidth: 1,

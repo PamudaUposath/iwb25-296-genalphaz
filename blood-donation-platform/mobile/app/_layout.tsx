@@ -4,7 +4,9 @@ import { AuthProvider } from '../context/AuthContext';
 
 export default function RootLayout() {
   return (
+    <AuthProvider>
     <>
+   
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="signin" />
         <Stack.Screen name="welcome" />
@@ -14,5 +16,9 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="auto" />
     </>
+    </AuthProvider>
   );
 }
+
+
+

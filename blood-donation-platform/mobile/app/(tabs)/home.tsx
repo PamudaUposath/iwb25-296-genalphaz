@@ -29,6 +29,7 @@ import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useAuth } from '../../context/AuthContext'; 
+import { SearchParams } from 'expo-router';
 
 export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -44,6 +45,121 @@ export default function HomeScreen() {
   type Reminder = { title: string; date: Date };
 
   const [reminders, setReminders] = useState<Reminder[]>([]);
+
+const { userId } = useAuth(); // get userId from AuthContext
+const [userData, setUserData] = useState<any>(null);
+
+const [urgentRequirements, setUrgentRequirements] = useState<any[]>([]);
+
+const getDaysUntilNextDonation = (lastDonationDate: string | null) => {
+  if (!lastDonationDate) return 0; // No donations yet, eligible immediately
+
+  const lastDate = new Date(lastDonationDate);
+  const today = new Date();
+  
+  const daysPassed = Math.floor(
+    (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  
+  const daysRemaining = 120 - daysPassed;
+  
+  return daysRemaining > 0 ? daysRemaining : 0; // 0 if already eligible
+};
+
+const getDonationProgress = (lastDonationDate: string | null) => {
+  if (!lastDonationDate) return 100; // fully eligible
+
+  const lastDate = new Date(lastDonationDate);
+  const today = new Date();
+
+  const daysPassed = Math.floor(
+    (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  const progress = (daysPassed / 120) * 100;
+
+  // Ensure progress is between 0% and 100%
+  return progress > 100 ? 100 : progress < 0 ? 0 : progress;
+};
+
+const donationProgress = getDonationProgress(userData?.last_donation_date);
+
+
+useEffect(() => {
+  console.log('AuthContext userId:', userId); // Debug log
+
+  if (userId) {
+    console.log(`Fetching data for userId: ${userId}`);
+    fetch(`http://localhost:8082/donors/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log('Fetched user data:', data); // Log fetched data
+        setUserData(data);
+      })
+      .catch(err => console.error('Fetch error:', err));
+  } else {
+    console.log('No userId available yet');
+  }
+}, [userId]);
+
+/*
+useEffect(() => {
+  fetch('/blood_requirements')
+    
+
+      .then(res => res.text())   // fetch as text
+  .then(text => {
+    try {
+      const data = JSON.parse(text);   // convert to JSON manually
+      console.log(data);
+      const urgentData = data.filter((req: any) => req.category === 'Uegent');
+      setUrgentRequirements(urgentData);
+      console.log('Fetched urgent requirements:', urgentData);
+      
+    } catch (err) {
+      console.error("Failed to parse JSON:", err);
+    }
+  })
+      
+    .catch(err => console.error('Error fetching blood requirements:', err));
+}, []);
+*/
+
+useEffect(() => {
+  fetch("blood_requirements")
+    .then(async res => {
+      const contentType = res.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        // ✅ Backend is returning JSON correctly
+        return res.json();
+      } else {
+        // ⚠️ Backend returned HTML instead of JSON
+        const text = await res.text();
+
+        // Try to extract JSON part if embedded in HTML
+        try {
+          // Example: find JSON inside <pre> ... </pre> or script tags
+          const match = text.match(/{[\s\S]*}/); // get first JSON-like block
+          if (match) {
+            return JSON.parse(match[0]); // ✅ Convert to JSON
+          } else {
+            throw new Error("No JSON found in HTML:\n" + text);
+          }
+        } catch (err) {
+          console.error("Failed to parse JSON from HTML:", err);
+          throw err;
+        }
+      }
+    })
+    .then(data => console.log("Data:", data))
+    .catch(err => console.error("Fetch error:", err));
+}, []);
+
+
+
+
+
 
   // const handleSaveReminder = () => {
   //   if (!reminderTitle || !reminderDate) {
@@ -208,7 +324,12 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{getGreeting()},</Text>
-            <Text style={styles.userName}>Kamal Perera</Text>
+         
+            <Text style={styles.userName}>
+  {userData ? `${userData.first_name} ${userData.last_name}` : 'Donor'}
+</Text>
+
+
             <Text style={styles.motivational}>Give hope, give life.</Text>
           </View>
           <TouchableOpacity
@@ -232,55 +353,75 @@ export default function HomeScreen() {
           <View style={styles.statusHeader}>
             <View style={styles.bloodTypeContainer}>
               <Droplets size={20} color="#DC2626" />
-              <Text style={styles.bloodType}>{userBloodType}</Text>
+             <Text style={styles.bloodType}>{userData?.blood_type}</Text>
+
+
             </View>
             <View style={styles.eligibilityBadge}>
-              <Text style={styles.eligibilityText}>Eligible in 45 days</Text>
-            </View>
+  <Text style={styles.eligibilityText}>
+    {userData?.last_donation_date
+      ? getDaysUntilNextDonation(userData.last_donation_date) === 0
+        ? 'Eligible to donate now'
+        : `Eligible in ${getDaysUntilNextDonation(userData.last_donation_date)} days`
+      : 'Eligible to donate now'}
+  </Text>
+</View>
           </View>
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '65%' }]} />
-            </View>
-            <Text style={styles.progressText}>65% until next donation</Text>
-          </View>
+         <View style={styles.progressContainer}>
+  <View style={styles.progressBar}>
+    <View
+      style={[
+        styles.progressFill,
+        { width: `${donationProgress}%` }, // dynamic width
+      ]}
+    />
+  </View>
+  <Text style={styles.progressText}>
+    {Math.round(donationProgress)}% until next donation
+  </Text>
+</View>
         </View>
 
         {/* Urgent Alerts */}
-        {urgentAlerts.length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Urgent Alerts</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAllText} onPress={goToAlerts}>
-                  See all
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {urgentAlerts.slice(0, 2).map((alert) => (
-              <View key={alert.id} style={styles.alertCard}>
-                <View style={styles.alertHeader}>
-                  <View style={styles.urgencyBadge}>
-                    <Text style={styles.urgencyText}>{alert.urgency}</Text>
-                  </View>
-                  <Text style={styles.alertBloodType}>{alert.bloodType}</Text>
-                </View>
-                <View style={styles.alertLocation}>
-                  <MapPin size={16} color="#6B7280" />
-                  <Text style={styles.alertLocationText}>{alert.location}</Text>
-                </View>
-                <View style={styles.alertFooter}>
-                  <Text style={styles.alertDistance}>
-                    Approximately {alert.distance} away
-                  </Text>
-                  <Text style={styles.alertTime}>
-                    Needed in {alert.timeLeft}
-                  </Text>
-                </View>
-              </View>
-            ))}
+        {/* Urgent Alerts */}
+{/* Urgent Alerts */}
+{urgentRequirements.length > 0 && (
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>Urgent Alerts</Text>
+      <TouchableOpacity>
+        <Text style={styles.seeAllText} onPress={goToAlerts}>
+          See all
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    {urgentRequirements.slice(0, 2).map((alert) => (
+      <View key={alert.id} style={styles.alertCard}>
+        <View style={styles.alertHeader}>
+          <View style={styles.urgencyBadge}>
+            <Text style={styles.urgencyText}>{alert.category}</Text>
           </View>
-        )}
+          <Text style={styles.alertBloodType}>{alert.blood_type}</Text>
+        </View>
+        <View style={styles.alertLocation}>
+          <MapPin size={16} color="#6B7280" />
+          <Text style={styles.alertLocationText}>Center ID: {alert.center_id}</Text>
+        </View>
+        <View style={styles.alertFooter}>
+          <Text style={styles.alertDistance}>
+            Units required: {alert.units_required}, Remaining: {alert.units_remaining}
+          </Text>
+          <Text style={styles.alertTime}>
+            Needed by: {new Date(alert.end_time).toLocaleString()}
+          </Text>
+        </View>
+      </View>
+    ))}
+  </View>
+)}
+
+
 
         {/* Live Blood Stock
         <View style={styles.section}>

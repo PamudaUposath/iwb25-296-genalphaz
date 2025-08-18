@@ -9,24 +9,42 @@ export default function SigninScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
-  //const { login } = useAuth();
-
+ const { login } = useAuth();
+ 
   const handleSignin = async () => {
-    router.replace('/(tabs)/home');
-    // try {
-    //   const response = await fetch(`http://10.0.2.2:8082/donors?email=${email}`);
-    //   const data = await response.json();
-    //   if (response.ok && data.length > 0) {
-    //     //login();
-       
-    //     router.push('(tabs)');
-    //   } else {
-    //     setMessage("User not found");
-    //   }
-    // } catch (error) {
-    //   setMessage("Error connecting to server");
-    // }
+    if (!email || !password) {
+      setMessage("Please enter email and password");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8082/donors/byEmail/${email}`);
+      const data = await response.json();
+console.log(data);
+      if (response.ok && !data.status) {
+        if (password === data.email) {
+          // Navigate to welcome page with user id
+          // Pass userId as search param to home page
+
+          login(data.id.toString()); // save userId in context
+router.replace('/(tabs)/home'); // no need to pass params
+
+
+
+        
+
+
+        
+        } else {
+          setMessage("Incorrect password");
+        }
+      } else {
+        setMessage(data.message || "User not found");
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage("Error connecting to server");
+    }
   };
   
   return (
@@ -60,7 +78,9 @@ export default function SigninScreen() {
         {message ? <Text style={styles.message}>{message}</Text> : null}
 
         <TouchableOpacity onPress={() => router.push('/signup')}>
-          <Text style={styles.signupLink}>Don't have an account? <Text style={{ fontWeight: 'bold' }}>Sign Up</Text></Text>
+          <Text style={styles.signupLink}>
+            Don't have an account? <Text style={{ fontWeight: 'bold' }}>Sign Up</Text>
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </LinearGradient>
@@ -68,24 +88,9 @@ export default function SigninScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    padding: 20,
-    justifyContent: 'center',
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
+  scroll: { padding: 20, justifyContent: 'center', flexGrow: 1 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#111827', textAlign: 'center', marginBottom: 8 },
+  subtitle: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 30 },
   input: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -100,27 +105,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
-  gradientButton: {
-    borderRadius: 12,
-    marginTop: 10,
-    marginBottom: 20,
-    paddingVertical: 2,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    paddingVertical: 14,
-  },
-  message: {
-    fontSize: 16,
-    color: 'green',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  signupLink: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
+  gradientButton: { borderRadius: 12, marginTop: 10, marginBottom: 20, paddingVertical: 2 },
+  buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold', paddingVertical: 14 },
+  message: { fontSize: 16, color: 'green', textAlign: 'center', marginBottom: 15 },
+  signupLink: { fontSize: 14, color: '#FFFFFF', textAlign: 'center' },
 });

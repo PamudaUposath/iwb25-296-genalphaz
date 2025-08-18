@@ -29,11 +29,21 @@ public type Donor record {
     boolean banned = false;           // default false
 };
 
-
-
+// Create listener (no CORS here)
 listener http:Listener listener8082 = new (8082);
 
+// Apply CORS directly on the service
+@http:ServiceConfig {
+    cors: {
+        allowOrigins: ["*"],
+        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowHeaders: ["Content-Type", "Authorization"],
+        allowCredentials: true
+    }
+}
+
 service /donors on listener8082 {
+
 
     // Insert donor (POST /donors)
   resource function post .(Donor req) returns json|error {
@@ -53,6 +63,17 @@ service /donors on listener8082 {
 }
 
 
+resource function get byEmail/[string email]() returns json|error {
+    sql:ParameterizedQuery pq = `SELECT id, email, first_name, last_name
+                                 FROM donors WHERE email = ${email}`;
+    record {| int id; string email; string first_name; string last_name; |}? row =
+        check dbClient->queryRow(pq);
+
+    if row is () {
+        return {status: "error", message: "User not found"};
+    }
+    return row;
+}
 
     // Get donor by ID (GET /donors/{id})
     resource function get [int id]() returns json|error {

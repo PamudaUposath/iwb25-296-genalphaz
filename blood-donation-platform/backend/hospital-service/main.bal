@@ -36,8 +36,6 @@ final postgresql:Client dbClient = check new (
     5432 // port
 );
 
-listener http:Listener listener8081 = new (8081);
-
 // Helper function to join strings manually
 function joinStrings(string[] arr, string sep) returns string {
     string result = "";
@@ -51,6 +49,20 @@ function joinStrings(string[] arr, string sep) returns string {
     }
     return result;
 }
+
+listener http:Listener listener8081 = new (8081);
+
+// Apply CORS directly on the service
+@http:ServiceConfig {
+    cors: {
+        allowOrigins: ["*"],
+        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowHeaders: ["Content-Type", "Authorization"],
+        allowCredentials: true
+    }
+}
+
+
 
 //just to try connection (http://localhost:8081/health)
 service / on listener8081 {

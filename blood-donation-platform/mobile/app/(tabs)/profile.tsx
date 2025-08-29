@@ -29,65 +29,62 @@ type Donation = {
   points: number;
   certificate: boolean;
 };
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function ProfileScreen() {
   const [showAllDonations, setShowAllDonations] = React.useState(false);
-  const [detailDonation, setDetailDonation] = React.useState(null);
+  const [detailDonation, setDetailDonation] = React.useState<Donation | null>(null);
   const [editProfileVisible, setEditProfileVisible] = React.useState(false);
+  // Profile state to enable editing
+  // Fetch profile from backend API
+  const [profile, setProfile] = React.useState<any>(null);
+  const [editProfileData, setEditProfileData] = React.useState<any>({});
+  
   const router = useRouter();
   const handleLogout = () => {
     router.replace('/');
   };
-  // Profile state to enable editing
-  const [profile, setProfile] = React.useState({
-    name: 'Sarah Williams',
-    bloodType: 'O+',
-    phoneNumber: '+94 77 123 4567',
-    email: 'sarah.williams@email.com',
-    lastDonation: '2025-08-15',
-    nextEligible: '2025-12-15',
-    totalDonations: 12,
-    totalPoints: 1250,
-    certificates: 3,
-  });
+  
+  // Mock userId for now - replace with actual auth context
+  const params = useLocalSearchParams<{ userId?: string }>();
+  const userId = React.useMemo(() => {
+    // Get userId from route params if passed from home page
+    return params?.userId || '1'; // fallback to '1' if no userId provided
+  }, [params]);
 
-  const [editProfileData, setEditProfileData] = React.useState(profile);
+  React.useEffect(() => {
+    console.log('AuthContext userId:', userId); // Debug log
 
-  const donationHistory = [
-    {
-      id: 1,
-      date: '2024-10-15',
-      location: 'Colombo General Hospital',
-      type: 'Regular',
-      points: 500,
-      certificate: true,
-    },
-    {
-      id: 2,
-      date: '2024-06-20',
-      location: 'Lady Ridgeway Hospital',
-      type: 'Urgent Request',
-      points: 600,
-      certificate: true,
-    },
-    {
-      id: 3,
-      date: '2024-02-10',
-      location: 'Teaching Hospital Peradeniya',
-      type: 'Regular',
-      points: 500,
-      certificate: false,
-    },
-    {
-      id: 4,
-      date: '2023-10-05',
-      location: 'Kandy General Hospital',
-      type: 'Regular',
-      points: 500,
-      certificate: true,
-    },
-  ];
+    if (userId) {
+      console.log(`Fetching data for userId: ${userId}`);
+      fetch(`http://localhost:8082/donors/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Fetched user data:', data); // Log fetched data
+          setProfile(data);
+          setEditProfileData(data); // Update edit data when profile is loaded
+        })
+        .catch(err => {
+          console.error('Fetch error:', err);
+          // fallback or error handling
+          const fallbackData = {
+            name: 'Sarah Williams',
+            bloodType: 'O+',
+            phoneNumber: '+94 77 123 4567',
+            email: 'sarah.williams@email.com',
+            lastDonation: '2025-08-15',
+            nextEligible: '2025-12-15',
+            totalDonations: 12,
+            totalPoints: 1250,
+            certificates: 3,
+          };
+          setProfile(fallbackData);
+          setEditProfileData(fallbackData); // Update edit data with fallback
+        });
+    } else {
+      console.log('No userId available yet');
+    }
+  }, [userId]);
 
   // Enable LayoutAnimation on Android
   React.useEffect(() => {
@@ -98,6 +95,51 @@ export default function ProfileScreen() {
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
+
+  // Show loading state while profile is null
+  if (!profile) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const donationHistory = [
+    {
+      id: 1,
+      date: '2024-10-15',
+      location: 'Colombo General Hospital',
+      type: 'Routine',
+      points: 500,
+
+    },
+    {
+      id: 2,
+      date: '2025-08-20',
+      location: 'Lady Ridgeway Hospital',
+      type: 'Urgent',
+      points: 600,
+
+    },
+    {
+      id: 3,
+      date: '2025-08-20',
+      location: 'Teaching Hospital Peradeniya',
+      type: 'Routine',
+      points: 500,
+ 
+    },
+    {
+      id: 4,
+      date: '2025-08-20',
+      location: 'Kandy General Hospital',
+      type: 'Routine',
+      points: 500,
+    },
+  ];
 
   const StatCard = ({ icon: Icon, title, value, subtitle }: any) => (
     <View style={styles.statCard}>
@@ -111,11 +153,14 @@ export default function ProfileScreen() {
   );
 
   const getDaysUntilEligible = () => {
+    if (!profile.nextEligible) {
+      return 'N/A';
+    }
     const nextDate = new Date(profile.nextEligible);
     const today = new Date();
     const diffTime = nextDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return diffDays > 0 ? diffDays : 0;
   };
 
   const toggleShowAllDonations = () => {
@@ -124,7 +169,7 @@ export default function ProfileScreen() {
   };
 
   // Handlers for modals
-  const openDonationDetails = (donation) => {
+  const openDonationDetails = (donation: Donation) => {
     setDetailDonation(donation);
   };
   const closeDonationDetails = () => {
@@ -132,7 +177,7 @@ export default function ProfileScreen() {
   };
 
   const openEditProfile = () => {
-    setEditProfileData(profile); // reset edits on open
+    setEditProfileData(profile); // reset edits to current profile data
     setEditProfileVisible(true);
   };
 
@@ -161,28 +206,28 @@ export default function ProfileScreen() {
               <User size={32} color="#FFFFFF" />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{profile.name}</Text>
-              <Text style={styles.profileContact}>{profile.phoneNumber}</Text>
-              <Text style={styles.profileEmail}>{profile.email}</Text>
+              <Text style={styles.profileName}>{profile.name || 'Unknown User'}</Text>
+              <Text style={styles.profileContact}>{profile.phoneNumber || 'No phone number'}</Text>
+              <Text style={styles.profileEmail}>{profile.email || 'No email'}</Text>
             </View>
             <View style={styles.bloodTypeBadge}>
-              <Text style={styles.bloodTypeText}>{profile.bloodType}</Text>
+              <Text style={styles.bloodTypeText}>{profile.bloodType || 'Unknown'}</Text>
             </View>
           </View>
         </View>
 
-        {/* Stats Grid */}
+        {/* Stats Grid
         <View style={styles.statsGrid}>
           <StatCard
             icon={Award}
             title="Total Points"
-            value={profile.totalPoints.toLocaleString()}
+            value={profile.totalPoints?.toLocaleString() || '0'}
             subtitle="Lifetime earned"
           />
           <StatCard
             icon={Calendar}
             title="Donations"
-            value={profile.totalDonations}
+            value={profile.totalDonations || 0}
             subtitle="Completed"
           />
           <StatCard
@@ -194,11 +239,11 @@ export default function ProfileScreen() {
           <StatCard
             icon={Download}
             title="Certificates"
-            value={profile.certificates}
+            value={profile.certificates || 0}
             subtitle="Available"
           />
           {/* Certificates StatCard kept or remove if you want */}
-        </View>
+        {/* </View> */}
 
         {/* Donation History */}
         <View style={styles.section}>
@@ -254,22 +299,22 @@ export default function ProfileScreen() {
 
               <View style={styles.historyFooter}>
                 <View style={styles.certificateStatus}>
-                  {donation.certificate ? (
+                  {/* {donation.certificate ? (
                     <TouchableOpacity style={styles.downloadButton}>
                       <Download size={14} color="#059669" />
                       <Text style={styles.downloadText}>Certificate</Text>
                     </TouchableOpacity>
                   ) : (
                     <Text style={styles.noCertificate}>No certificate</Text>
-                  )}
+                  )} */}
                 </View>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.viewDetails}
                   onPress={() => openDonationDetails(donation)}
                 >
                   <Text style={styles.viewDetailsText}>Details</Text>
                   <ChevronRight size={14} color="#6B7280" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
           ))}
@@ -324,7 +369,7 @@ export default function ProfileScreen() {
             <Text style={styles.modalTitle}>Edit Profile</Text>
             <TextInput
               style={styles.input}
-              value={editProfileData.name}
+              value={editProfileData?.name || ''}
               onChangeText={(text) =>
                 setEditProfileData({ ...editProfileData, name: text })
               }
@@ -332,7 +377,7 @@ export default function ProfileScreen() {
             />
             <TextInput
               style={styles.input}
-              value={editProfileData.phoneNumber}
+              value={editProfileData?.phoneNumber || ''}
               onChangeText={(text) =>
                 setEditProfileData({ ...editProfileData, phoneNumber: text })
               }
@@ -341,7 +386,7 @@ export default function ProfileScreen() {
             />
             <TextInput
               style={styles.input}
-              value={editProfileData.email}
+              value={editProfileData?.email || ''}
               onChangeText={(text) =>
                 setEditProfileData({ ...editProfileData, email: text })
               }
@@ -379,6 +424,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
     paddingBottom: -100,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6B7280',
   },
   scrollView: {
     flex: 1,

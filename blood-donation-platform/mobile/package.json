@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "private": true,
   "proxy": "http://localhost:8081",
-
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
     "build:web": "expo export --platform web",
@@ -13,6 +12,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@lucide/lab": "^0.1.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "^8.4.4",
     "@react-native-community/slider": "^4.5.7",
     "@react-native-picker/picker": "^2.11.1",

@@ -6,8 +6,22 @@ import BloodRequestForm from "./BloodRequestForm";
 // const BACKEND_SIGNOUT_ENDPOINT = 'http://localhost:5000/api/signout'; // <-- Update this when backend is ready
 import { QrReader } from 'react-qr-scanner'; // Install with: npm install react-qr-reader
 
+
 export default function Dashboard({ center, onSignOut }) {
-  const [activeTab, setActiveTab] = useState("overview");
+//  const [activeTab, setActiveTab] = useState("overview");
+
+  // --- Active tab state ---
+const [activeTab, setActiveTab] = useState(() => {
+  // Load from localStorage, default to "overview"
+  return localStorage.getItem("activeTab") || "overview";
+});
+
+// Save to localStorage whenever it changes
+useEffect(() => {
+  localStorage.setItem("activeTab", activeTab);
+}, [activeTab]);
+
+
   const [requests, setRequests] = useState([
     { id: 1, bloodType: "O+", units: 2, status: "Pending" },
     { id: 2, bloodType: "A-", units: 1, status: "Urgent" },
@@ -37,6 +51,7 @@ export default function Dashboard({ center, onSignOut }) {
     );
   };
 
+    const [donationIdCounter, setDonationIdCounter] = useState(1);
   const markUrgent = (id) => {
     setRequests(prev =>
       prev.map(req => (req.id === id ? { ...req, status: "Urgent" } : req))
@@ -44,7 +59,12 @@ export default function Dashboard({ center, onSignOut }) {
     alert("Notification sent: Blood needed urgently!");
   };
 
-  const addRequest = (newRequest) => setRequests(prev => [...prev, newRequest]);
+    const [requestIdCounter, setRequestIdCounter] = useState(3); // start after initial 2
+
+  const addRequest = (newRequest) => {
+    setRequests(prev => [...prev, { ...newRequest, id: requestIdCounter }]);
+    setRequestIdCounter(prev => prev + 1);
+  };
 
   const editRequest = (id) => {
     const req = requests.find(r => r.id === id);
@@ -56,10 +76,23 @@ export default function Dashboard({ center, onSignOut }) {
   };
 
   const deleteRequest = (id) => {
-    if (window.confirm("Are you sure you want to delete this request?")) {
-      setRequests(prev => prev.filter(r => r.id !== id));
-    }
-  };
+  if (window.confirm("Are you sure you want to delete this request?")) {
+    setRequests(prev => {
+      // remove the one with the given id
+      const updated = prev.filter(r => r.id !== id);
+
+      // reassign IDs sequentially starting from 1
+      return updated.map((r, index) => ({
+        ...r,
+        id: index + 1
+      }));
+    });
+
+    // also reset the counter to maintain correct next id
+    setRequestIdCounter(prev => prev - 1);
+  }
+};
+
 
   // ----------------- Stock -----------------
   const updateStock = (type) => {
@@ -88,7 +121,7 @@ export default function Dashboard({ center, onSignOut }) {
     if (result) setDonationData(prev => ({ ...prev, nic: result }));
   };
 
-  const submitDonation = () => {
+ const submitDonation = () => {
     const { nic, bloodType, units } = donationData;
     if (!nic || !bloodType || !units || isNaN(units)) {
       alert("Please enter valid donation details!");
@@ -97,7 +130,13 @@ export default function Dashboard({ center, onSignOut }) {
 
     setStock(prev => ({ ...prev, [bloodType]: prev[bloodType] + parseInt(units) }));
     alert(`Donation recorded for ${nic}!`);
-    setDonationsList(prev => [...prev, { id: Date.now(), nic, bloodType, units, status: "Accepted", reason: "" }]);
+
+    setDonationsList(prev => [
+      ...prev,
+      { id: donationIdCounter, nic, bloodType, units, status: "Accepted", reason: "" }
+    ]);
+    setDonationIdCounter(prev => prev + 1);
+
     setDonationData({ nic: "", bloodType: "O+", units: "" });
     setScanQR(false);
   };
@@ -131,6 +170,7 @@ export default function Dashboard({ center, onSignOut }) {
         {/* ----------- MOBILE HEADER + DROPDOWN ----------- */}
         {isMobile ? (
           <div style={{ width: '100%', padding: '10px', background: '#b71c1c', color: '#fff', textAlign: 'center' }}>
+            <h2 style={{ margin: 0 }}>Kandy</h2>
             <h2 style={{ margin: 0 }}>Blood Bank Center</h2>
             <select
               value={activeTab}
@@ -152,7 +192,7 @@ export default function Dashboard({ center, onSignOut }) {
           </div>
         ) : (
           <>
-            <h2 className="logo">Blood Bank Center</h2>
+            <h2 className="logo">Kandy Blood Bank Center</h2>
             <ul style={{ flex: 1 }}>
               <li className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</li>
               <li className={activeTab === "requests" ? "active" : ""} onClick={() => setActiveTab("requests")}>Requests</li>
@@ -216,7 +256,7 @@ export default function Dashboard({ center, onSignOut }) {
                         <td>{req.units}</td>
                         <td>{req.status}</td>
                         <td>
-                          <button onClick={() => approveRequest(req.id)}>Approve</button>
+                          
                           <button onClick={() => markUrgent(req.id)}>Mark Urgent</button>
                           <button onClick={() => editRequest(req.id)}>Edit</button>
                           <button onClick={() => deleteRequest(req.id)}>Delete</button>

@@ -112,7 +112,7 @@ useEffect(() => {
     try {
       const data = JSON.parse(text);   // convert to JSON manually
       console.log(data);
-      const urgentData = data.filter((req: any) => req.category === 'Uegent');
+      const urgentData = data.filter((req: any) => req.category === 'Urgent');
       setUrgentRequirements(urgentData);
       console.log('Fetched urgent requirements:', urgentData);
       
@@ -234,9 +234,9 @@ useEffect(() => {
   ];
 
   const notifications = [
-    'You have 3 new alerts',
-    'Appointment confirmed',
-    'Blood donation reminder',
+    { centerName: 'General Hospital', bloodType: 'O+', unitsRequired: 5 },
+    { centerName: 'City Medical Center', bloodType: 'A-', unitsRequired: 3 },
+    { centerName: 'Regional Hospital', bloodType: 'B+', unitsRequired: 7 },
   ];
 
   const getStockStatusColor = (status: string) => {
@@ -465,8 +465,8 @@ useEffect(() => {
             />
             <QuickActionCard
               icon={Clock}
-              title="History & Eligibility"
-              subtitle="When can I donate?"
+              title="History"
+              subtitle="Personal donation history"
               color="#F59E0B"
               onPress={goToProfile}
             />

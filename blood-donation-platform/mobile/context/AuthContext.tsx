@@ -1,10 +1,12 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStoredUserToken, getStoredUserProfile, clearStoredData } from '../utils/storage';
 
 type AuthContextType = {
   isLoggedIn: boolean;
   userId: string | null;
   login: (id: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -13,14 +15,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Check for stored authentication data on app start
+  useEffect(() => {
+    checkStoredAuth();
+  }, []);
+
+  const checkStoredAuth = async () => {
+    try {
+      const storedToken = await getStoredUserToken();
+      const storedUser = await getStoredUserProfile();
+      
+      if (storedToken && storedUser) {
+        setIsLoggedIn(true);
+        setUserId(storedToken);
+      }
+    } catch (error) {
+      console.error('Error checking stored auth:', error);
+    }
+  };
+
   const login = (id: string) => {
     setIsLoggedIn(true);
     setUserId(id);
+    // Token is already stored in signin.tsx
   };
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUserId(null);
+  const logout = async () => {
+    try {
+      // Clear all stored data using utility function
+      await clearStoredData();
+      setIsLoggedIn(false);
+      setUserId(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (

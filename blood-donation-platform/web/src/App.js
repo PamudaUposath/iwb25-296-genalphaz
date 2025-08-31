@@ -1,21 +1,33 @@
 import './App.css';
 import Dashboard from './components/dashboard_components/Dashboard';  
 import SignIn from './components/dashboard_components/SignIn';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [center, setCenter] = useState(null); // Placeholder for center info
+  const [center, setCenter] = useState(null);
 
-  // Callback for successful login
+  // 🔹 Restore login state on app load
+  useEffect(() => {
+    const storedUser = localStorage.getItem("center");
+    if (storedUser) {
+      setIsAuthenticated(true);
+      setCenter(storedUser);
+    }
+  }, []);
+
+  // 🔹 Handle successful login
   const handleLogin = (username) => {
     setIsAuthenticated(true);
-    setCenter(username); // Replace with actual center info if available
+    setCenter(username);
+    localStorage.setItem("center", username); // save session
   };
 
+  // 🔹 Handle sign out
   const handleSignOut = () => {
     setIsAuthenticated(false);
     setCenter(null);
+    localStorage.removeItem("center"); // clear session
   };
 
   return (

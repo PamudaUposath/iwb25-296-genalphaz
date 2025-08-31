@@ -95,12 +95,36 @@ The platform consists of three main components:
 
 ## Endpoints
 
-**Public API:**
 
-* `GET /api/branches` → List of all centers
-* `GET /api/donors` → List of donors
-* `POST /api/donations` → Log a donation
-* `POST /api/qr` → Generate QR token
+### 1. Blood Requirements API
+- **GET** `/blood_requirements/{id}` → Retrieve details of a specific blood requirement.  
+- **POST** `/blood_requirements` → Create a new blood requirement entry.  
+- **PUT** `/blood_requirements/{id}` → Update an existing blood requirement.  
+- **DELETE** `/blood_requirements/{id}` → Delete a blood requirement.  
+
+
+### 2. Donors API
+- **GET** `/donors/{id}` → Retrieve donor details by ID.  
+- **POST** `/donors` → Add a new donor.  
+- **PUT** `/donors/{id}` → Update donor information.  
+- **DELETE** `/donors/{id}` → Remove a donor from the system.  
+
+
+### 3. Donations API
+- **POST** `/donations` → Record a new donation.  
+- **GET** `/donations/points/{donorId}` → Retrieve total reward points of a donor.  
+- **GET** `/donations/count/{donorId}` → Get the total number of donations made by a donor.  
+- **GET** `/donations/history/{donorId}` → Retrieve the donation history of a donor.  
+
+
+
+### 4. Centers API
+- **GET** `/centers/{id}` → Retrieve details of a specific donation center.  
+- **POST** `/centers` → Add a new donation center.  
+- **PUT** `/centers/{id}` → Update details of an existing donation center.  
+- **DELETE** `/centers/{id}` → Remove a donation center.  
+
+
 
 **Notification Service:**
 

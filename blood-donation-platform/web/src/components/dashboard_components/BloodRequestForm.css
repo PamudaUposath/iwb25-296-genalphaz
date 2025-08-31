@@ -1,0 +1,59 @@
+/* Custom style for units input field */
+.blood-request-form input[type="number"] {
+  width: 100%;
+  padding: 10px;
+
+  border-radius: 6px;
+  font-size: 1.1rem;
+  background: #ffffff;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.blood-request-form input[type="number"]:focus {
+
+  outline: none;
+  background: #ffffff;
+}
+.blood-request-form {
+  background: #fff5f5;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ff4d4f;
+  border-radius: 8px;
+}
+
+.blood-request-form h2 {
+  margin-bottom: 1rem;
+  color: #d00000;
+}
+
+.blood-request-form label {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.blood-request-form select,
+.blood-request-form input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.blood-request-form button {
+  margin-top: 1rem;
+  background: #d00000;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.blood-request-form button:hover {
+  background: #a00000;
+}

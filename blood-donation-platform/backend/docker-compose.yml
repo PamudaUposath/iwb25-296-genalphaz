@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lankadonate
+    ports:
+      - "5433:5432"  # Use 5433 if 5432 is in use
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    platform: linux/amd64
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    platform: linux/amd64
+
+  kafka:
+    image: wurstmeister/kafka
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+    ports:
+      - "9092:9092"
+    platform: linux/amd64
+
+  hospital-service:
+    build: ./hospital-service
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: lankadonate
+      KAFKA_BROKER: kafka:9092
+    platform: linux/amd64
+
+  public-api:
+    build: ./public-api-service
+    depends_on:
+      - postgres
+      - kafka
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: lankadonate
+      KAFKA_BROKER: kafka:9092
+    platform: linux/amd64
+
+  notification-service:
+    build: ./notification-service
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: lankadonate
+      KAFKA_BROKER: kafka:9092
+    platform: linux/amd64

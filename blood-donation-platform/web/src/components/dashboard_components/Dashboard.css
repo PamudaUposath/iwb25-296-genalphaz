@@ -1,0 +1,586 @@
+/* Custom style for units input field in donation form */
+.donation-form input[type="number"] {
+  width: 100%;
+  padding: 10px;
+
+  border-radius: 6px;
+  font-size: 1.1rem;
+  background: #ffffff;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.donation-form input[type="number"]:focus {
+
+  outline: none;
+  background: #ffffff;
+}
+/* Dashboard.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #b30000;
+  color: white;
+  width: 240px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 90vh;
+  position: relative;
+/* Make sign out button sticky at the bottom */
+
+}
+
+.sidebar .logo {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+.sidebar ul li:hover,
+.sidebar ul li.active {
+  background-color: white;
+  color: #b30000;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #b30000;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.card.red {
+  background-color: #b30000;
+  color: white;
+}
+
+.card.white {
+  background-color: white;
+  color: #b30000;
+  border: 2px solid #b30000;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background-color: #b30000;
+  color: white;
+}
+
+button {
+  padding: 6px 12px;
+  margin: 0 5px;
+  background-color: #b30000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #800000;
+}
+
+/* BloodRequestForm styles */
+.blood-request-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #b30000;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.blood-request-form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.blood-request-form input,
+.blood-request-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.blood-request-form button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background-color: #b30000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.blood-request-form button:hover {
+  background-color: #800000;
+}
+
+/* Blood Stock Styles */
+.stock-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stock-item {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  background: #fff5f5;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #b30000;
+}
+
+.stock-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #b30000;
+}
+
+.stock-bar {
+  width: 50px;
+  height: 200px;
+  background-color: #eee;
+  border-radius: 10px;
+  margin: auto;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.stock-fill {
+  width: 100%;
+  background-color: #b30000;
+  transition: height 0.5s ease-in-out;
+}
+
+.stock-text {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.stock-item button {
+  margin-top: 8px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  background-color: #b30000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.stock-item button:hover {
+  background-color: #800000;
+}
+/* Additional actions in requests table */
+table button {
+  margin: 0 3px;
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  background-color: #b30000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+table button:hover {
+  background-color: #800000;
+}
+
+/* Donation form */
+.donation-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #b30000;
+  max-width: 400px;
+}
+
+.donation-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+.donation-form input,
+.donation-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.donation-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #b30000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.donation-form button:hover {
+  background-color: #800000;
+}
+
+/* QR Scanner container */
+.qr-scanner {
+  margin: 10px 0;
+  border: 2px solid #b30000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0;
+    min-height: auto;
+  }
+
+  .sidebar .logo {
+    flex: 1;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .sidebar ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .sidebar ul li {
+    flex: 0 0 auto;
+    padding: 10px 15px;
+    margin: 0 5px;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .stock-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stock-item {
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .stock-bar {
+    width: 30px;
+    height: 150px;
+  }
+
+  table {
+    font-size: 0.8rem;
+  }
+
+  table th, table td {
+    padding: 5px;
+  }
+
+  .donation-form, .blood-request-form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .qr-scanner {
+    width: 100%;
+  }
+}
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Mobile dropdown menu for Dashboard tabs */
+.mobile-menu {
+  display: none; /* Hidden by default on desktop */
+  margin-bottom: 10px;
+}
+
+.mobile-menu select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #b30000;
+  font-size: 1rem;
+  background-color: white;
+  color: #b30000;
+  cursor: pointer;
+}
+
+/* Show mobile dropdown on screens <= 768px */
+@media screen and (max-width: 768px) {
+  .mobile-menu {
+    display: block;
+  }
+
+  .sidebar ul {
+    display: none; /* Hide default sidebar links on mobile */
+  }
+}
+.mobile-menu {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.mobile-menu select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+/* Mobile-specific header and footer styles */
+@media screen and (max-width: 768px) {
+  .mobile-header {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #b30000;
+    margin-bottom: 10px;
+  }
+
+  .mobile-dropdown {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .mobile-dropdown select {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #b30000;
+    background-color: #fff5f5;
+    color: #b30000;
+    font-size: 1.1rem;
+    font-weight: bold;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(179, 0, 0, 0.07);
+    position: relative;
+  }
+
+  /* Custom dropdown arrow */
+  .mobile-dropdown {
+    position: relative;
+  }
+
+  .mobile-dropdown select:focus {
+    border-color: #d32f2f;
+    outline: none;
+    box-shadow: 0 0 0 2px #b3000044;
+  }
+
+  /* Add a custom arrow using a pseudo-element */
+  .mobile-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #b30000;
+    transform: translateY(-50%);
+  }
+
+  .mobile-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    z-index: 100;
+    text-align: center;
+  }
+
+  .mobile-footer button {
+    background-color: white;
+    color: #b30000;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .mobile-footer button:hover {
+    background-color: #f1f1f1;
+  }
+
+  .signout-btn {
+    width: 100%;
+    padding: 10px;
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Only show footer on mobile */
+  @media (min-width: 769px) {
+    .mobile-footer {
+      display: none;
+    }
+  }
+}
+/* =======================
+   DONOR WINDOW STYLES
+======================= */
+
+/* Blocked Donor Button */
+.blocked-donor-btn {
+  background-color: #ff4444; /* bright red to signal warning */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.blocked-donor-btn:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+/* Optional disabled/blocked state */
+.blocked-donor-btn.disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+/* Reason Input for Blocked Donor */
+.blocked-reason-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+/* Donor Action Buttons Container */
+.donor-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Table adjustments for mobile */
+@media (max-width: 768px) {
+  .donor-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .blocked-reason-input {
+    font-size: 0.85rem;
+  }
+}
+
+
+

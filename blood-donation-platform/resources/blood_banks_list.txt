@@ -1,0 +1,832 @@
+Name: National Blood Center
+Address: No. 555/5D, Elvitigala Mawatha, Narahenpita, Colombo 05, Sri Lanka.
+District: Colombo
+Phone: +94112369931 – 4
+Email: info@nbts.health.gov.lk
+Hours: 08:00 AM - 6:00 PM
+Latitude: 6.89138, Longitude: 79.8778
+
+Name: Blood Bank - Anuradhapura Teaching Hospital
+Address: Bandaranayake Mawatha, Anuradhapura
+District: Anuradhapura
+Phone: 0252236424
+Email: bloodbankanuradhapura@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 8.3258, Longitude: 80.4135
+
+Name: Blood Bank - Colombo North Teaching Hospital (Ragama)
+Address: Ragama, Gampaha
+District: Gampaha
+Phone: 0112960535
+Email: ragamabloodbank@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.02849, Longitude: 79.921
+
+Name: Blood Bank - Colombo South Teaching Hospital (Kalubowila)
+Address: Kalubowila, Colombo
+District: Colombo
+Phone: 
+Email: bbcsth@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.86808, Longitude: 79.8748
+
+Name: Blood Bank - Galle National Hospital (Karapitiya)
+Address: Hirimbura Cross Road, Galle
+District: Galle
+Phone: 0912226066
+Email: karapitiyabb@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.047, Longitude: 80.22
+
+Name: Blood Bank - Jaffna Teaching Hospital
+Address: Hospital Road, Jaffna
+District: Jaffna
+Phone: 0212223063
+Email: jaffnabloodbank@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 9.6692, Longitude: 80.2215
+
+Name: Blood Bank - Kandy National Hospital (Teaching)
+Address: William Gopallawa Mawatha, Kandy
+District: Kandy
+Phone: 0812204414
+Email: bloodbankkandy@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.2926, Longitude: 80.6337
+
+Name: Blood Bank - Peradeniya Teaching Hospital
+Address: Peradeniya, Kandy
+District: Kandy
+Phone: 0812068268
+Email: ccbbpera@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.2906, Longitude: 80.5907
+
+Name: Blood Bank - Ratnapura Teaching Hospital
+Address: Ratnapura
+District: Ratnapura
+Phone: 0452226592
+Email: bloodbankrathnapura@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.6631, Longitude: 80.3968
+
+Name: Blood Bank - Teaching Hospital Badulla
+Address: Badulla
+District: Badulla
+Phone: 055222124
+Email: bloodbankbadullapgh@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.9869, Longitude: 81.057
+
+Name: Blood Bank - Teaching Hospital Batticaloa
+Address: Batticaloa
+District: Batticaloa
+Phone: 0652226116
+Email: bb.thbatticaloa@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.7111, Longitude: 81.6986
+
+Name: Blood Bank - Apeksha Hospital (National Cancer Institute)
+Address: Maharagama
+District: Colombo
+Phone: 0112849525
+Email: apekshabloodbank@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.8375, Longitude: 79.9202
+
+Name: Blood Bank - Teaching Hospital Mahamodara
+Address: 
+District: Galle
+Phone: 0912018222
+Email: bloodbankthm@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.03882, Longitude: 80.2057
+
+Name: Blood Bank - DGH Nuwara Eliya
+Address: 
+District: Nuwara Eliya
+Phone: 0522224317
+Email: nuwaraeliyabloodbank@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.97419, Longitude: 80.7802
+
+Name: Blood Bank - DGH Nawalapitiya
+Address: N/A
+District: Kandy
+Phone: 
+Email: bbnawalapitiya@gmail.com
+Hours: 
+Latitude: 7.05312, Longitude: 80.5352
+
+Name: Blood Bank - DGH Kegalle
+Address: N/A
+District: Kegalle
+Phone: 0352230264
+Email: kegallebb@gmail.com
+Hours: 
+Latitude: 7.24748, Longitude: 80.3455
+
+Name: Blood Bank - DGH Embilipitiya
+Address: N/A
+District: Ratnapura
+Phone: 
+Email: moicbbemb@gmail.com
+Hours: 
+Latitude: 6.32594, Longitude: 80.8418
+
+Name: Blood Bank - DGH Kalutara
+Address: N/A
+District: Kalutara
+Phone: 0342236529
+Email: kalutarabb2014@gmail.com
+Hours: 
+Latitude: 6.56324, Longitude: 79.9853
+
+Name: Blood Bank - DGH Gampaha
+Address: N/A
+District: Gampaha
+Phone: 0332060299
+Email: gampahabloodbank@gmail.com
+Hours: 
+Latitude: 7.09134, Longitude: 80.0007
+
+Name: Blood Bank - DGH Negombo
+Address: N/A
+District: Gampaha
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.21249, Longitude: 79.8484
+
+Name: Blood Bank - DGH Matale
+Address: N/A
+District: Matale
+Phone: 
+Email: moicbbmt@gmail.com
+Hours: 
+Latitude: 7.46111, Longitude: 80.6247
+
+Name: Blood Bank - DGH Hambantota
+Address: N/A
+District: Hambantota
+Phone: 0472220160
+Email: dghbloodbankhambanthota@gmail.com
+Hours: 
+Latitude: 6.12682, Longitude: 81.1226
+
+Name: Blood Bank - DGH Monaragala
+Address: N/A
+District: Monaragala
+Phone: 0552055931
+Email: bbmonaragala@gmail.com
+Hours: 
+Latitude: 6.89137, Longitude: 81.3426
+
+Name: Blood Bank - DGH Mannar
+Address: N/A
+District: Mannar
+Phone: 
+Email: moic.mnr22@gmail.com
+Hours: 
+Latitude: 8.98238, Longitude: 79.9038
+
+Name: Blood Bank - DGH Vavuniya
+Address: N/A
+District: Vavuniya
+Phone: 0242227437
+Email: moicvabb@gmail.com
+Hours: 
+Latitude: 8.7602, Longitude: 80.4999
+
+Name: Blood Bank - DGH Trincomalee
+Address: N/A
+District: Trincomalee
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.56491, Longitude: 81.2395
+
+Name: Blood Bank - DGH Chilaw
+Address: N/A
+District: Puttalam
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.57235, Longitude: 79.7973
+
+Name: Blood Bank - DGH Polonnaruwa
+Address: N/A
+District: Polonnaruwa
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.94323, Longitude: 81.0096
+
+Name: Blood Bank - DGH Matara
+Address: N/A
+District: Matara
+Phone: 
+Email: 
+Hours: 
+Latitude: 5.948, Longitude: 80.5497
+
+Name: Blood Bank - DGH Kilinochchi
+Address: N/A
+District: Kilinochchi
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.37274, Longitude: 80.4118
+
+Name: Blood Bank - DGH Ampara
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.29903, Longitude: 81.6894
+
+Name: Blood Bank - DGH Mullaitivu
+Address: N/A
+District: Mullaitivu
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.22692, Longitude: 80.8005
+
+Name: Blood Bank - DGH Avissawella
+Address: N/A
+District: Colombo
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.95715, Longitude: 80.2074
+
+Name: Blood Bank - Base Hospital Homagama
+Address: N/A
+District: Colombo
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.84805, Longitude: 79.9917
+
+Name: Blood Bank - Base Hospital Dikoya
+Address: N/A
+District: Nuwara Eliya
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.85515, Longitude: 80.6003
+
+Name: Blood Bank - Base Hospital Gampola
+Address: N/A
+District: Kandy
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.15649, Longitude: 80.565
+
+Name: Blood Bank - Base Hospital Panadura
+Address: N/A
+District: Kalutara
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.72164, Longitude: 79.9068
+
+Name: Blood Bank - Kethumathi Maternity Hospital
+Address: N/A
+District: Kalutara
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.71535, Longitude: 79.9086
+
+Name: Blood Bank - Base Hospital Wathupitiwala
+Address: N/A
+District: Gampaha
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.12356, Longitude: 80.1097
+
+Name: Blood Bank - Base Hospital Dambulla
+Address: N/A
+District: Matale
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.87265, Longitude: 80.6506
+
+Name: Blood Bank - Base Hospital Tangalle
+Address: N/A
+District: Hambantota
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.02278, Longitude: 80.7975
+
+Name: Blood Bank - Base Hospital Balapitiya
+Address: N/A
+District: Galle
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.26069, Longitude: 80.0382
+
+Name: Blood Bank - Base Hospital Elpitiya
+Address: N/A
+District: Galle
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.29387, Longitude: 80.1643
+
+Name: Blood Bank - Base Hospital Kuliyapitiya
+Address: N/A
+District: Kurunegala
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.47207, Longitude: 80.0446
+
+Name: Blood Bank - Base Hospital Diyatalawa
+Address: N/A
+District: Badulla
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.80559, Longitude: 80.9563
+
+Name: Blood Bank - Base Hospital Mahiyanganaya
+Address: N/A
+District: Badulla
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.32552, Longitude: 80.991
+
+Name: Blood Bank - Base Hospital Valachchenai
+Address: N/A
+District: Batticaloa
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.91135, Longitude: 81.533
+
+Name: Blood Bank - Base Hospital Kaluvanchikudy
+Address: N/A
+District: Batticaloa
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.51737, Longitude: 81.7852
+
+Name: Blood Bank - Base Hospital Kantale
+Address: N/A
+District: Trincomalee
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.36674, Longitude: 81.0048
+
+Name: Blood Bank - Base Hospital Puttalam
+Address: N/A
+District: Puttalam
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.02794, Longitude: 79.8387
+
+Name: Blood Bank - Base Hospital Medirigiriya
+Address: N/A
+District: Polonnaruwa
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.14324, Longitude: 80.9671
+
+Name: Blood Bank - Base Hospital Akkaraipattu
+Address: 
+District: Ampara
+Phone: 
+Email: bloodbankabh@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.22774, Longitude: 81.8511
+
+Name: Blood Bank - Base Hospital Kalmunai South AMH
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.40321, Longitude: 81.8311
+
+Name: Blood Bank - Base Hospital Kalmunai North
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.42009, Longitude: 81.8223
+
+Name: Blood Bank - Base Hospital Point Pedro
+Address: N/A
+District: Jaffna
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.80567, Longitude: 80.2248
+
+Name: Blood Bank - Base Hospital Tellipalai
+Address: N/A
+District: Jaffna
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.78434, Longitude: 80.0387
+
+Name: Blood Bank - Base Hospital Thambuththegama
+Address: N/A
+District: Anuradhapura
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.15374, Longitude: 80.2937
+
+Name: Blood Bank - National Institute of Infectious Diseases (IDH)
+Address: N/A
+District: Colombo
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.92239, Longitude: 79.917
+
+Name: Blood Bank - Base Hospital Mulleriyawa
+Address: N/A
+District: Colombo
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.92493, Longitude: 79.9429
+
+Name: Blood Bank - Base Hospital Rikillagaskada
+Address: N/A
+District: Nuwara Eliya
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.14537, Longitude: 80.7826
+
+Name: Blood Bank - Base Hospital Teldeniya
+Address: N/A
+District: Kandy
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.30717, Longitude: 80.7643
+
+Name: Blood Bank - Base Hospital Karawanella
+Address: N/A
+District: Kegalle
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.02456, Longitude: 80.2618
+
+Name: Blood Bank - Base Hospital Warakapola
+Address: 
+District: Kegalle
+Phone: 0352268639
+Email: bloodbankwarakapola@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.22531, Longitude: 80.1961
+
+Name: Blood Bank - Base Hospital Mawanella
+Address: N/A
+District: Kegalle
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.25358, Longitude: 80.4462
+
+Name: Blood Bank - Base Hospital Kahawatta
+Address: N/A
+District: Ratnapura
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.57887, Longitude: 80.5745
+
+Name: Blood Bank - Base Hospital Balangoda
+Address: N/A
+District: Ratnapura
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.65833, Longitude: 80.7125
+
+Name: Blood Bank - Base Hospital Meerigama
+Address: N/A
+District: Gampaha
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.25833, Longitude: 80.1351
+
+Name: Blood Bank - Base Hospital Minuwangoda
+Address: N/A
+District: Gampaha
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.17226, Longitude: 79.9562
+
+Name: Blood Bank - Base Hospital Tissamaharama
+Address: N/A
+District: Hambantota
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.28531, Longitude: 81.2686
+
+Name: Blood Bank - Base Hospital Walasmulla
+Address: N/A
+District: Hambantota
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.14694, Longitude: 80.6983
+
+Name: Blood Bank - Base Hospital Udugama
+Address: N/A
+District: Galle
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.18814, Longitude: 80.3407
+
+Name: Blood Bank - Base Hospital Bibile
+Address: N/A
+District: Monaragala
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.16402, Longitude: 81.2252
+
+Name: Blood Bank - Base Hospital Wellawaya
+Address: N/A
+District: Monaragala
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.73062, Longitude: 81.0985
+
+Name: Blood Bank - Base Hospital Nikaweratiya
+Address: N/A
+District: Kurunegala
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.74751, Longitude: 80.1144
+
+Name: Blood Bank - Base Hospital Dambadeniya
+Address: N/A
+District: Kurunegala
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.34865, Longitude: 80.1373
+
+Name: Blood Bank - Base Hospital Galgamuwa
+Address: N/A
+District: Kurunegala
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.00127, Longitude: 80.2772
+
+Name: Blood Bank - Base Hospital Welimada
+Address: N/A
+District: Badulla
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.90894, Longitude: 80.9092
+
+Name: Blood Bank - Base Hospital Chettikulam
+Address: N/A
+District: Vavuniya
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.65894, Longitude: 80.3125
+
+Name: Blood Bank - Base Hospital Kattankudy
+Address: N/A
+District: Batticaloa
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.68527, Longitude: 81.7393
+
+Name: Blood Bank - Base Hospital Kinniya
+Address: N/A
+District: Trincomalee
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.5021, Longitude: 81.1878
+
+Name: Blood Bank - Base Hospital Muttur
+Address: N/A
+District: Trincomalee
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.45457, Longitude: 81.263
+
+Name: Blood Bank - Base Hospital Marawila
+Address: N/A
+District: Puttalam
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.39347, Longitude: 79.8321
+
+Name: Blood Bank - Base Hospital Deniyaya
+Address: N/A
+District: Matara
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.35768, Longitude: 80.568
+
+Name: Blood Bank - Base Hospital Kamburupitiya
+Address: N/A
+District: Matara
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.09602, Longitude: 80.5646
+
+Name: Blood Bank - Base Hospital Potuvil
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.87621, Longitude: 81.8303
+
+Name: Blood Bank - Base Hospital Sammanturai
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.36839, Longitude: 81.813
+
+Name: Blood Bank - Base Hospital Chavakachcheri
+Address: 
+District: Jaffna
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.66165, Longitude: 80.1668
+
+Name: Blood Bank - Base Hospital Kayts
+Address: N/A
+District: Jaffna
+Phone: 
+Email: 
+Hours: 
+Latitude: 9.69841, Longitude: 79.8659
+
+Name: Blood Bank - Base Hospital Padaviya
+Address: N/A
+District: Anuradhapura
+Phone: 
+Email: 
+Hours: 
+Latitude: 8.83238, Longitude: 80.769
+
+Name: Blood Bank - Base Hospital Mahaoya
+Address: N/A
+District: Ampara
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.53087, Longitude: 81.3556
+
+Name: Blood Bank - Base Hospital Dehiattakandiya
+Address: 
+District: Ampara
+Phone: 
+Email: bloodbankkdk@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 7.67299, Longitude: 81.0434
+
+Name: Blood Bank - Teaching Hospital Kurunegala
+Address: N/A
+District: Kurunegala
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.47913, Longitude: 80.3591
+
+Name: Blood Bank - National Hospital for Respiratory Diseases (Welisara)
+Address: N/A
+District: Gampaha
+Phone: 
+Email: 
+Hours: 
+Latitude: 7.02493, Longitude: 79.9035
+
+Name: Blood Bank - Lady Ridgeway Hospital for Children (LRH)
+Address: N/A
+District: Colombo
+Phone: 
+Email: 
+Hours: 
+Latitude: 6.91771, Longitude: 79.8763
+
+Name: Blood Bank - Castle Street Hospital for Women (CSHW)
+Address: Castle St, Colombo 08
+District: Colombo
+Phone: 0112 696 231
+Email: moicbbcshw@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.91021, Longitude: 79.8843
+
+Name: Blood Bank - Sri Jayawardhanepura General Hospital
+Address: 
+District: Colombo
+Phone: 
+Email: bbank@sjghsrilanka.lk
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.86877, Longitude: 79.9256
+
+Name: Blood Bank - National Institute for Nephrology, Dialises & Transplantation (Maligawatta)
+Address: 
+District: Colombo
+Phone: 
+Email: nintbloodbank@gmail.com
+Hours: 
+Latitude: 6.93241, Longitude: 79.8716
+
+Name: Blood Bank - De Soysa Hospital for Women (DMH)
+Address: 
+District: Colombo
+Phone: 
+Email: dmhbloodbank@gmail.com
+Hours: 
+Latitude: 6.92002, Longitude: 79.8706
+
+Name: South Regional Blood Centre - Kamburugamuwa
+Address: 
+District: Matara
+Phone: 0412227232
+Email: srbckamburugamuwa@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 5.94182, Longitude: 80.4974
+
+Name: Blood Bank - Base Hospital Medawachchiya
+Address: 
+District: Anuradhapura
+Phone: 
+Email: 
+Hours: 08:00 AM - 4:00 PM
+Latitude: 8.541, Longitude: 80.4733
+
+Name: Blood Bank - University Hospital KDU
+Address: 
+District: Colombo
+Phone: 
+Email: bloodbankuhkdu@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.82483, Longitude: 79.9071
+
+Name: Blood Bank - Army Hospital
+Address: 
+District: Colombo
+Phone: 
+Email: srilankaarmyhospitalbloodbank@gmail.com
+Hours: 
+Latitude: 6.89989, Longitude: 79.8757
+
+Name: Blood Bank - DGH Horana
+Address: 
+District: Kalutara
+Phone: 0342267036
+Email: bloodbankdghhorana@gmail.com
+Hours: 08:00 AM - 4:00 PM
+Latitude: 6.71069, Longitude: 80.0657
+
+Name: Blood Bank - Base Hospital Eheliyagoda
+Address: 
+District: Ratnapura
+Phone: 
+Email: bloodbankeheliyagoda@gmail.com
+Hours: 
+Latitude: 6.84823, Longitude: 80.2642
+

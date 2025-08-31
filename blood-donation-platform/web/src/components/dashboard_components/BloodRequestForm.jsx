@@ -14,7 +14,7 @@ export default function BloodRequestForm({ onAddRequest }) {
       id: Date.now(),
       bloodType,
       units: parseInt(units),
-      status: "Pending",
+      status: "Routine",
     };
 
     onAddRequest(newRequest);

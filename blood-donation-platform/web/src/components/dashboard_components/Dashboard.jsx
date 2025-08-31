@@ -23,7 +23,7 @@ useEffect(() => {
 
 
   const [requests, setRequests] = useState([
-    { id: 1, bloodType: "O+", units: 2, status: "Pending" },
+    { id: 1, bloodType: "O+", units: 2, status: "Routine" },
     { id: 2, bloodType: "A-", units: 1, status: "Urgent" },
   ]);
   const [stock, setStock] = useState({
@@ -192,7 +192,7 @@ useEffect(() => {
           </div>
         ) : (
           <>
-            <h2 className="logo">Kandy Blood Bank Center</h2>
+            <h2 className="logo">Peradeniya Teaching Hospital <br/>(Blood Bank)</h2>
             <ul style={{ flex: 1 }}>
               <li className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</li>
               <li className={activeTab === "requests" ? "active" : ""} onClick={() => setActiveTab("requests")}>Requests</li>
@@ -221,8 +221,8 @@ useEffect(() => {
                 <p>{Object.values(stock).reduce((a, b) => a + b, 0)}</p>
               </div>
               <div className="card white">
-                <h3>Pending Requests</h3>
-                <p>{requests.filter(r => r.status === "Pending").length}</p>
+                <h3>Routine Requests</h3>
+                <p>{requests.filter(r => r.status === "Routine").length}</p>
               </div>
               <div className="card red">
                 <h3>Urgent Requests</h3>

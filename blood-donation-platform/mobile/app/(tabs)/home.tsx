@@ -234,7 +234,7 @@ useEffect(() => {
   ];
 
   const notifications = [
-    // { centerName: 'Peradeniya Teaching Hospital', bloodType: 'AB+', unitsRequired: 10},
+    { centerName: 'Peradeniya Teaching Hospital', bloodType: 'AB+', unitsRequired: 10},
     // { centerName: 'City Medical Center', bloodType: 'A-', unitsRequired: 3 },
     // { centerName: 'Regional Hospital', bloodType: 'B+', unitsRequired: 7 },
   ];

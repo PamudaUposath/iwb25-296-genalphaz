@@ -21,19 +21,24 @@ useEffect(() => {
   localStorage.setItem("activeTab", activeTab);
 }, [activeTab]);
 
+const [requests, setRequests] = useState([
+  { id: 1, bloodType: "O+", units: 2, status: "Routine" },
+  { id: 2, bloodType: "A-", units: 1, status: "Urgent" },
+]);
+const [stock, setStock] = useState({
+  "O+": 10,
+  "A+": 8,
+  "B+": 6,
+  "B-": 5,
+  "AB+": 4,
+  "AB-": 2,
+  "O-": 3,
+  "A-": 2,
+});
 
-  const [requests, setRequests] = useState([
-    { id: 1, bloodType: "O+", units: 2, status: "Routine" },
-    { id: 2, bloodType: "A-", units: 1, status: "Urgent" },
-  ]);
-  const [stock, setStock] = useState({
-    "O+": 10,
-    "A+": 8,
-    "B+": 6,
-    "AB+": 4,
-    "O-": 3,
-    "A-": 2,
-  });
+// --- Helper to split blood types into two rows ---
+const bloodTypesRow1 = ["O+", "A+", "B+", "AB+"];
+const bloodTypesRow2 = ["O-", "A-", "B-", "AB-"];
 
   // ----------------- MOBILE RESPONSIVENESS -----------------
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -274,20 +279,31 @@ useEffect(() => {
           <section className="stock">
             <h1>Blood Stock</h1>
             <div className="stock-container">
-              {Object.entries(stock).map(([type, units]) => {
-                const percentage = Math.min((units / 100) * 100, 100);
-                return (
-                  <div key={type} className="stock-item">
-                    <div className="stock-label">{type}</div>
-                    <div className="stock-bar">
-                      <div className="stock-fill" style={{ height: `${percentage}%` }}></div>
-                    </div>
-                    <div className="stock-text">{units} units</div>
-                    <button onClick={() => updateStock(type)}>Update</button>
-                  </div>
-                );
-              })}
+      <div className="stock-row">
+        {bloodTypesRow1.map(type => (
+          <div key={type} className="stock-item">
+            <div className="stock-label">{type}</div>
+            <div className="stock-bar">
+              <div className="stock-fill" style={{ height: `${Math.min((stock[type] / 100) * 100, 100)}%` }}></div>
             </div>
+            <div className="stock-text">{stock[type]} units</div>
+            <button onClick={() => updateStock(type)}>Update</button>
+          </div>
+        ))}
+      </div>
+      <div className="stock-row">
+        {bloodTypesRow2.map(type => (
+          <div key={type} className="stock-item">
+            <div className="stock-label">{type}</div>
+            <div className="stock-bar">
+              <div className="stock-fill" style={{ height: `${Math.min((stock[type] / 100) * 100, 100)}%` }}></div>
+            </div>
+            <div className="stock-text">{stock[type]} units</div>
+            <button onClick={() => updateStock(type)}>Update</button>
+          </div>
+        ))}
+      </div>
+    </div>
           </section>
         )}
 

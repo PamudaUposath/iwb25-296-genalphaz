@@ -50,8 +50,6 @@ const { userId } = useAuth(); // get userId from AuthContext
 const [userData, setUserData] = useState<any>(null);
 
 const [urgentRequirements, setUrgentRequirements] = useState<any[]>([]);
-const [centerMap, setCenterMap] = useState<Record<string, string>>({});
-const [centersWithRequirements, setCentersWithRequirements] = useState<any[]>([]);
 
 const getDaysUntilNextDonation = (lastDonationDate: string | null) => {
   if (!lastDonationDate) return 0; // No donations yet, eligible immediately
@@ -128,41 +126,35 @@ useEffect(() => {
 */
 
 useEffect(() => {
-  if (userData?.blood_type) {
-    fetch(`http://localhost:8082/blood_requirements`)
-      .then(async res => {
-        const contentType = res.headers.get("content-type");
+  fetch("blood_requirements")
+    .then(async res => {
+      const contentType = res.headers.get("content-type");
 
-        if (contentType && contentType.includes("application/json")) {
-          return res.json();
-        } else {
-          const text = await res.text();
-          try {
-            const match = text.match(/{[\s\S]*}/);
-            if (match) {
-              return JSON.parse(match[0]);
-            } else {
-              throw new Error("No JSON found in HTML:\n" + text);
-            }
-          } catch (err) {
-            console.error("Failed to parse JSON from HTML:", err);
-            throw err;
+      if (contentType && contentType.includes("application/json")) {
+        // ✅ Backend is returning JSON correctly
+        return res.json();
+      } else {
+        // ⚠️ Backend returned HTML instead of JSON
+        const text = await res.text();
+
+        // Try to extract JSON part if embedded in HTML
+        try {
+          // Example: find JSON inside <pre> ... </pre> or script tags
+          const match = text.match(/{[\s\S]*}/); // get first JSON-like block
+          if (match) {
+            return JSON.parse(match[0]); // ✅ Convert to JSON
+          } else {
+            throw new Error("No JSON found in HTML:\n" + text);
           }
+        } catch (err) {
+          console.error("Failed to parse JSON from HTML:", err);
+          throw err;
         }
-      })
-      .then(data => {
-        console.log("All blood requirements:", data);
-        // Filter for user's blood type and urgent requests
-        const userBloodRequirements = data.filter((req: any) => 
-          req.blood_type === userData.blood_type && 
-          (req.category === 'Urgent' || req.category === 'urgent')
-        );
-        setUrgentRequirements(userBloodRequirements);
-        console.log(`Filtered requirements for ${userData.blood_type}:`, userBloodRequirements);
-      })
-      .catch(err => console.error("Fetch error:", err));
-  }
-}, [userData?.blood_type]);
+      }
+    })
+    .then(data => console.log("Data:", data))
+    .catch(err => console.error("Fetch error:", err));
+}, []);
 
 
 
@@ -222,54 +214,30 @@ useEffect(() => {
     { type: 'AB-', units: 3, status: 'urgent' },
   ];
 
-  // Fetch center details and map center_id to center name
-  useEffect(() => {
-    fetch('http://localhost:8081/centers')
-      .then(res => res.json())
-      .then(data => {
-        // data should be an array of centers with id and name
-        const map: Record<string, string> = {};
-        data.forEach((center: { id: string; name: string }) => {
-          map[center.id] = center.name;
-        });
-        setCenterMap(map);
-      })
-      .catch(err => console.error('Error fetching centers:', err));
-  }, []);
+  const urgentAlerts = [
+    {
+      id: 1,
+      bloodType: 'O+',
+      location: 'Colombo General Hospital',
+      distance: '2.3 km',
+      urgency: 'Routine',
+      timeLeft: '4 hours',
+    },
+    {
+      id: 2,
+      bloodType: 'O+',
+      location: 'Lady Ridgeway Hospital',
+      distance: '5.7 km',
+      urgency: 'Urgent',
+      timeLeft: '12 hours',
+    },
+  ];
 
-  // Fetch centers that have blood requirements for user's blood type
-  useEffect(() => {
-    if (userData?.blood_type && urgentRequirements.length > 0) {
-      const centerIds = [...new Set(urgentRequirements.map(req => req.center_id))];
-      
-      console.log('Fetching centers for IDs:', centerIds); // Debug log
-      
-      // Fetch detailed center information
-      Promise.all(
-        centerIds.map(centerId => 
-          fetch(`http://localhost:8081/centers/${centerId}`)
-            .then(res => res.json())
-            .catch(err => {
-              console.error(`Error fetching center ${centerId}:`, err);
-              return null;
-            })
-        )
-      ).then(centers => {
-        const validCenters = centers.filter(center => center !== null);
-        console.log('Fetched centers:', validCenters); // Debug log
-        setCentersWithRequirements(validCenters);
-      });
-    }
-  }, [userData?.blood_type, urgentRequirements]);
-
-  // Helper to get center name by id
-  const getCenterName = (centerId: string) => centerMap[centerId] || `Center ID: ${centerId}`;
-
-  const notifications: NotificationItem[] = urgentRequirements.slice(0, 3).map(req => ({
-    centerName: `Center ID: ${req.center_id}`,
-    bloodType: req.blood_type,
-    unitsRequired: req.units_required
-  }));
+  const notifications = [
+    'You have 3 new alerts',
+    'Appointment confirmed',
+    'Blood donation reminder',
+  ];
 
   const getStockStatusColor = (status: string) => {
     switch (status) {
@@ -476,84 +444,6 @@ useEffect(() => {
           </View>
         </View> */}
 
-        {/* Blood Centers Requiring Your Blood Type */}
-        {userData?.blood_type && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Centers Needing Your Blood Type</Text>
-              <Text style={styles.seeAllText}>{userData?.blood_type}</Text>
-            </View>
-            {centersWithRequirements.length > 0 ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.centersScrollView}>
-                {centersWithRequirements.map((center) => {
-                  // Get the urgent requirement for this center
-                  const centerRequirement = urgentRequirements.find(req => req.center_id === center.id);
-                  const urgency = centerRequirement?.category || 'Routine';
-                  const unitsNeeded = centerRequirement?.units_required || 0;
-                  const unitsRemaining = centerRequirement?.units_remaining || 0;
-                  const endTime = centerRequirement?.end_time;
-                  
-                  return (
-                    <View key={center.id} style={styles.centerCard}>
-                      <View style={styles.centerHeader}>
-                        <View style={styles.centerLeft}>
-                          <View style={[styles.urgencyBadge, { backgroundColor: urgency === 'Urgent' ? '#FEE2E2' : '#fff9c4' }]}>
-                            <Text style={[styles.urgencyText, { color: urgency === 'Urgent' ? '#DC2626' : '#7c4700' }]}>
-                              {urgency}
-                            </Text>
-                          </View>
-                          <Text style={styles.centerCode}>{center.district}</Text>
-                        </View>
-                        <View style={styles.bloodTypeContainer}>
-                          <Text style={styles.centerBloodType}>{userData?.blood_type}</Text>
-                          <Text style={styles.unitsNeeded}>{unitsNeeded} units</Text>
-                        </View>
-                      </View>
-
-                      <Text style={styles.centerName}>{center.name}</Text>
-                      <View style={styles.locationDetails}>
-                        <MapPin size={14} color="#6B7280" />
-                        <Text style={styles.addressText}>{center.address}</Text>
-                      </View>
-
-                      <View style={styles.centerMetrics}>
-                        <View style={styles.metric}>
-                          <MapPin size={16} color="#6B7280" />
-                          <Text style={styles.metricText}>{center.contact_phone}</Text>
-                        </View>
-                        {endTime && (
-                          <View style={styles.metric}>
-                            <Clock size={16} color="#DC2626" />
-                            <Text style={styles.metricText}>Until {new Date(endTime).toLocaleDateString()}</Text>
-                          </View>
-                        )}
-                      </View>
-
-                      <View style={styles.centerActions}>
-                        <TouchableOpacity 
-                          style={styles.callButton}
-                          onPress={() => Linking.openURL(`tel:${center.contact_phone}`)}
-                        >
-                          <Text style={styles.callButtonText}>Call Now</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  );
-                })}
-              </ScrollView>
-            ) : (
-              <View style={styles.centerCard}>
-                <Text style={styles.centerName}>
-                  {urgentRequirements.length > 0 
-                    ? "Loading centers..." 
-                    : "No urgent requirements for your blood type at the moment."
-                  }
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
-
         {/* Quick Actions */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -569,14 +459,14 @@ useEffect(() => {
             <QuickActionCard
               icon={Award}
               title="My Points"
-              subtitle={`${userData?.points || 0} points earned`}
+              subtitle="See my leaderboard position"
               color="#059669"
               onPress={goToLeaderboard}
             />
             <QuickActionCard
               icon={Clock}
               title="History & Eligibility"
-              subtitle={`${userData?.total_donations || 0} total donations`}
+              subtitle="When can I donate?"
               color="#F59E0B"
               onPress={goToProfile}
             />
@@ -1170,128 +1060,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
-  },
-  centersScrollView: {
-    paddingHorizontal: 16,
-  },
-  centerCard: {
-    backgroundColor: '#FFFFFF',
-    width: 280,
-    marginRight: 12,
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  centerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  centerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  centerCode: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  centerBloodType: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#DC2626',
-  },
-  unitsNeeded: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 2,
-  },
-  centerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  locationDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  addressText: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginLeft: 4,
-    flex: 1,
-  },
-  centerMetrics: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  metric: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  metricText: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginLeft: 4,
-  },
-  centerActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  bloodTypeBadge: {
-    backgroundColor: '#DC2626',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  bloodTypeBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  centerDetails: {
-    marginBottom: 12,
-  },
-  centerDistrict: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 4,
-  },
-  centerAddress: {
-    fontSize: 12,
-    color: '#6B7280',
-    lineHeight: 16,
-  },
-  centerContact: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  centerPhone: {
-    fontSize: 12,
-    color: '#374151',
-    flex: 1,
-  },
-  callButton: {
-    backgroundColor: '#DC2626',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  callButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
 });

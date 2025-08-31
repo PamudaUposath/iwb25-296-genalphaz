@@ -4,7 +4,7 @@
 
 ## 1. Build the Container
 
-Navigate to the **backend** folder from the location where your GitHub repository is initialized, and build the container:
+Navigate to the **backend** folder from the docker exec -it backend-postgres-1 psql -U postgres -d lankadonatelocation where your GitHub repository is initialized, and build the container:
 
 docker compose up --build -d
 
@@ -16,7 +16,7 @@ This will create 6 images inside the "backend" container .  make sure all the im
 Use the provided SQL file to create the database:
 
 psql -U <username> -d <database_name> -f path/to/database.sql
-docker exec -it backend-postgres-1 psql -U postgres -d lankadonate
+
 
 > Replace `<username>` and `<database_name>` with your actual PostgreSQL username and database name.
 type database\migrations\001_init.sql | docker exec -i backend-postgres-1 psql -U postgres -d lankadonate

@@ -119,7 +119,7 @@ export default function AlertsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Urgent Blood Requests</Text>
+        <Text style={styles.title}>Alerts</Text>
 
         <TouchableOpacity style={styles.filterIcon} onPress={toggleFilters}>
           <Filter size={24} color="#374151" />

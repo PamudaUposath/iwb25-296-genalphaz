@@ -28,7 +28,7 @@ import {
 export default function MoreScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
   const [darkMode, setDarkMode] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -41,7 +41,7 @@ export default function MoreScreen() {
     { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
   ];
 
-  const openModal = (content) => {
+  const openModal = (content: React.ReactNode) => {
     setModalContent(content);
     setModalVisible(true);
   };
@@ -64,7 +64,15 @@ export default function MoreScreen() {
     setFeedback('');
   };
 
-  const MenuItem = ({ icon: Icon, title, subtitle, onPress, badge }) => (
+  type MenuItemProps = {
+    icon: React.ComponentType<{ size?: number; color?: string }>;
+    title: string;
+    subtitle?: string;
+    onPress: () => void;
+    badge?: string;
+  };
+
+  const MenuItem: React.FC<MenuItemProps> = ({ icon: Icon, title, subtitle, onPress, badge = undefined }) => (
     <TouchableOpacity style={styles.menuItem} onPress={onPress}>
       <View style={styles.menuLeft}>
         <View style={styles.menuIcon}>
@@ -94,7 +102,7 @@ export default function MoreScreen() {
         </View>
 
         {/* Eligibility Tracker Card */}
-        <View style={[styles.eligibilityCard, darkMode && { backgroundColor: '#1E1E1E' }]}>
+        {/* <View style={[styles.eligibilityCard, darkMode && { backgroundColor: '#1E1E1E' }]}>
           <View style={styles.eligibilityHeader}>
             <Target size={24} color="#DC2626" />
             <Text style={[styles.eligibilityTitle, darkMode && { color: 'white' }]}>Eligibility Tracker</Text>
@@ -111,7 +119,7 @@ export default function MoreScreen() {
               <Text style={[styles.progressText, darkMode && { color: '#BBBBBB' }]}>65% complete</Text>
             </View>
           </View>
-        </View>
+        </View> */}
 
         {/* Health & Wellness */}
         <View style={styles.section}>
@@ -254,10 +262,10 @@ export default function MoreScreen() {
               <Text style={[styles.pointsRuleTitle, darkMode && { color: 'white' }]}>Urgent Request Bonus:</Text>
               <Text style={[styles.pointsRuleValue, darkMode && { color: '#EF9A9A' }]}>+100 points</Text>
             </View>
-            <View style={styles.pointsRule}>
+            {/* <View style={styles.pointsRule}>
               <Text style={[styles.pointsRuleTitle, darkMode && { color: 'white' }]}>Streak Bonus:</Text>
               <Text style={[styles.pointsRuleValue, darkMode && { color: '#EF9A9A' }]}>+50 points</Text>
-            </View>
+            </View> */}
             <Text style={[styles.pointsNote, darkMode && { color: '#BBBBBB' }]}>Minimum points: 200</Text>
           </View>
         </View>

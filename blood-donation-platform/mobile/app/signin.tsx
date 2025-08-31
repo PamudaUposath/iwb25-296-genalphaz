@@ -9,8 +9,8 @@ export default function SigninScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
- const { login } = useAuth();
- 
+  const { login } = useAuth();
+
   const handleSignin = async () => {
     if (!email || !password) {
       setMessage("Please enter email and password");
@@ -26,7 +26,7 @@ console.log(data);
           // Navigate to welcome page with user id
           // Pass userId as search param to home page
 
-          login(data.id.toString()); // save userId in context
+          await login(data.id.toString()); // save userId in context
 router.replace('/(tabs)/home'); // no need to pass params
 
 

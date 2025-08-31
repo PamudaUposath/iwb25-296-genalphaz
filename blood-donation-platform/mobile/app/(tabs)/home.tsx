@@ -234,9 +234,9 @@ useEffect(() => {
   ];
 
   const notifications = [
-    { centerName: 'General Hospital', bloodType: 'O+', unitsRequired: 5 },
-    { centerName: 'City Medical Center', bloodType: 'A-', unitsRequired: 3 },
-    { centerName: 'Regional Hospital', bloodType: 'B+', unitsRequired: 7 },
+    // { centerName: 'Peradeniya Teaching Hospital', bloodType: 'AB+', unitsRequired: 10},
+    // { centerName: 'City Medical Center', bloodType: 'A-', unitsRequired: 3 },
+    // { centerName: 'Regional Hospital', bloodType: 'B+', unitsRequired: 7 },
   ];
 
   const getStockStatusColor = (status: string) => {
@@ -372,12 +372,12 @@ useEffect(() => {
     <View
       style={[
         styles.progressFill,
-        { width: `${donationProgress}%` }, // dynamic width
+        { width: `0%` }, // dynamic width
       ]}
     />
   </View>
   <Text style={styles.progressText}>
-    {Math.round(donationProgress)}% until next donation
+    wait {90} days for the next donation
   </Text>
 </View>
         </View>

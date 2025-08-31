@@ -76,6 +76,24 @@ export const updateStoredUserProfile = async (updatedProfile: any) => {
   }
 };
 
+// Store user token
+export const storeUserToken = async (token: string) => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_TOKEN, token);
+  } catch (error) {
+    console.error('Error storing user token:', error);
+  }
+};
+
+// Store user profile
+export const storeUserProfile = async (profile: any) => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.LOGGED_IN_USER, JSON.stringify(profile));
+  } catch (error) {
+    console.error('Error storing user profile:', error);
+  }
+};
+
 // Create authenticated fetch headers
 export const getAuthHeaders = async () => {
   try {

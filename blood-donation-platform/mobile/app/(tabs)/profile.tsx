@@ -30,6 +30,7 @@ type Donation = {
   certificate: boolean;
 };
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ProfileScreen() {
   const [showAllDonations, setShowAllDonations] = React.useState(false);
@@ -41,48 +42,74 @@ export default function ProfileScreen() {
   const [editProfileData, setEditProfileData] = React.useState<any>({});
   
   const router = useRouter();
+  const { userId } = useAuth(); // Get userId from AuthContext
+  
   const handleLogout = () => {
     router.replace('/');
   };
-  
-  // Mock userId for now - replace with actual auth context
-  const params = useLocalSearchParams<{ userId?: string }>();
-  const userId = React.useMemo(() => {
-    // Get userId from route params if passed from home page
-    return params?.userId || '1'; // fallback to '1' if no userId provided
-  }, [params]);
 
   React.useEffect(() => {
     console.log('AuthContext userId:', userId); // Debug log
 
+    const fallbackData = {
+      name: 'Sarah Williams',
+      bloodType: 'O+',
+      // phoneNumber: '+94 77 123 4567',
+      email: 'sarah.williams@email.com',
+      lastDonation: '2025-08-15',
+      nextEligible: '2025-12-15',
+      totalDonations: 12,
+      totalPoints: 1250,
+      certificates: 3,
+    };
+
+    // Set fallback data immediately so UI shows something
+    setProfile(fallbackData);
+    setEditProfileData(fallbackData);
+
     if (userId) {
       console.log(`Fetching data for userId: ${userId}`);
       fetch(`http://localhost:8082/donors/${userId}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
           console.log('Fetched user data:', data); // Log fetched data
-          setProfile(data);
-          setEditProfileData(data); // Update edit data when profile is loaded
+          
+          // Check if data is valid
+          if (!data || typeof data !== 'object') {
+            throw new Error('Invalid data received from server');
+          }
+          
+          // Update with real data if fetch succeeds
+          const firstName = data.first_name || '';
+          const lastName = data.last_name || '';
+          const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName || 'Unknown User';
+          
+          const profileData = {
+            name: fullName,
+            bloodType: data.blood_type || 'Unknown',
+            // phoneNumber: data.phone_number || '+94 77 123 4567',
+            email: data.email || 'nimal@mailinator.com',
+            lastDonation: data.last_donation_date,
+            nextEligible: data.next_eligible_date,
+            totalDonations: data.total_donations || 1,
+            totalPoints: data.total_points || 700,
+            certificates: data.certificates || 0,
+          };
+          setProfile(profileData);
+          setEditProfileData(profileData);
         })
         .catch(err => {
           console.error('Fetch error:', err);
-          // fallback or error handling
-          const fallbackData = {
-            name: 'Sarah Williams',
-            bloodType: 'O+',
-            phoneNumber: '+94 77 123 4567',
-            email: 'sarah.williams@email.com',
-            lastDonation: '2025-08-15',
-            nextEligible: '2025-12-15',
-            totalDonations: 12,
-            totalPoints: 1250,
-            certificates: 3,
-          };
-          setProfile(fallbackData);
-          setEditProfileData(fallbackData); // Update edit data with fallback
+          // Keep fallback data if fetch fails (already set above)
+          console.log('Using fallback data due to fetch error');
         });
     } else {
-      console.log('No userId available yet');
+      console.log('No userId available from AuthContext, using fallback data');
     }
   }, [userId]);
 
@@ -107,38 +134,18 @@ export default function ProfileScreen() {
     );
   }
 
-  const donationHistory = [
+  const donationHistory: Donation[] = [
     {
       id: 1,
-      date: '2024-10-15',
-      location: 'Colombo General Hospital',
-      type: 'Routine',
-      points: 500,
-
-    },
-    {
-      id: 2,
-      date: '2025-08-20',
-      location: 'Lady Ridgeway Hospital',
+      date: '2024-08-29',
+      location: 'Peradeniya Teaching Hospital',
       type: 'Urgent',
-      points: 600,
-
-    },
-    {
-      id: 3,
-      date: '2025-08-20',
-      location: 'Teaching Hospital Peradeniya',
-      type: 'Routine',
       points: 500,
- 
+      certificate: false,
     },
-    {
-      id: 4,
-      date: '2025-08-20',
-      location: 'Kandy General Hospital',
-      type: 'Routine',
-      points: 500,
-    },
+    
+    
+    
   ];
 
   const StatCard = ({ icon: Icon, title, value, subtitle }: any) => (
@@ -207,7 +214,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{profile.name || 'Unknown User'}</Text>
-              <Text style={styles.profileContact}>{profile.phoneNumber || 'No phone number'}</Text>
+              {/* <Text style={styles.profileContact}>{profile.phoneNumber || 'No phone number'}</Text> */}
               <Text style={styles.profileEmail}>{profile.email || 'No email'}</Text>
             </View>
             <View style={styles.bloodTypeBadge}>
@@ -216,7 +223,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Stats Grid
+        {/* Stats Grid */}
         <View style={styles.statsGrid}>
           <StatCard
             icon={Award}
@@ -230,94 +237,101 @@ export default function ProfileScreen() {
             value={profile.totalDonations || 0}
             subtitle="Completed"
           />
-          <StatCard
+          {/* <StatCard
             icon={Clock}
-            title="to Next Eligible"
+            title="Days to Next Eligible"
             value={`${getDaysUntilEligible()} days`}
             subtitle="Until next donation"
-          />
-          <StatCard
+          /> */}
+          {/* <StatCard
             icon={Download}
             title="Certificates"
             value={profile.certificates || 0}
             subtitle="Available"
-          />
-          {/* Certificates StatCard kept or remove if you want */}
-        {/* </View> */}
+          /> */}
+        </View>
 
         {/* Donation History */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Donation History</Text>
-            <TouchableOpacity
-              onPress={toggleShowAllDonations}
-              activeOpacity={1}
-            >
-              <Text style={styles.seeAllText}>
-                {showAllDonations ? 'Show Less' : 'View All'}
-              </Text>
-            </TouchableOpacity>
+            {donationHistory.length > 0 && (
+              <TouchableOpacity
+                onPress={toggleShowAllDonations}
+                activeOpacity={1}
+              >
+                <Text style={styles.seeAllText}>
+                  {showAllDonations ? 'Show Less' : 'View All'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          {(showAllDonations
-            ? donationHistory
-            : donationHistory.slice(0, 2)
-          ).map((donation) => (
-            <View key={donation.id} style={styles.historyCard}>
-              <View style={styles.historyHeader}>
-                <View>
-                  <Text style={styles.historyDate}>
-                    {new Date(donation.date).toLocaleDateString()}
-                  </Text>
-                  <Text style={styles.historyLocation}>
-                    {donation.location}
-                  </Text>
-                </View>
-                <View style={styles.historyRight}>
-                  <View
-                    style={[
-                      styles.typeBadge,
-                      donation.type === 'Urgent Request' &&
-                        styles.urgentTypeBadge,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.typeText,
-                        donation.type === 'Urgent Request' &&
-                          styles.urgentTypeText,
-                      ]}
-                    >
-                      {donation.type}
+          {donationHistory.length === 0 ? (
+            <View style={styles.emptyHistoryCard}>
+              <Text style={styles.emptyHistoryText}>Current donation history is empty</Text>
+            </View>
+          ) : (
+            (showAllDonations
+              ? donationHistory
+              : donationHistory.slice(0, 2)
+            ).map((donation) => (
+              <View key={donation.id} style={styles.historyCard}>
+                <View style={styles.historyHeader}>
+                  <View>
+                    <Text style={styles.historyDate}>
+                      {new Date(donation.date).toLocaleDateString()}
+                    </Text>
+                    <Text style={styles.historyLocation}>
+                      {donation.location}
                     </Text>
                   </View>
-                  <Text style={styles.pointsEarned}>
-                    +{donation.points} pts
-                  </Text>
+                  <View style={styles.historyRight}>
+                    <View
+                      style={[
+                        styles.typeBadge,
+                        donation.type === 'Urgent Request' &&
+                          styles.urgentTypeBadge,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.typeText,
+                          donation.type === 'Urgent Request' &&
+                            styles.urgentTypeText,
+                        ]}
+                      >
+                        {donation.type}
+                      </Text>
+                    </View>
+                    <Text style={styles.pointsEarned}>
+                      +{donation.points} pts
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={styles.historyFooter}>
-                <View style={styles.certificateStatus}>
-                  {/* {donation.certificate ? (
-                    <TouchableOpacity style={styles.downloadButton}>
-                      <Download size={14} color="#059669" />
-                      <Text style={styles.downloadText}>Certificate</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <Text style={styles.noCertificate}>No certificate</Text>
-                  )} */}
+                <View style={styles.historyFooter}>
+                  <View style={styles.certificateStatus}>
+                    {/* {donation.certificate ? (
+                      <TouchableOpacity style={styles.downloadButton}>
+                        <Download size={14} color="#059669" />
+                        <Text style={styles.downloadText}>Certificate</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <Text style={styles.noCertificate}>No certificate</Text>
+                    )} */}
+                  </View>
+                  {/* <TouchableOpacity
+                    style={styles.viewDetails}
+                    onPress={() => openDonationDetails(donation)}
+                  >
+                    <Text style={styles.viewDetailsText}>Details</Text>
+                    <ChevronRight size={14} color="#6B7280" />
+                  </TouchableOpacity> */}
                 </View>
-                {/* <TouchableOpacity
-                  style={styles.viewDetails}
-                  onPress={() => openDonationDetails(donation)}
-                >
-                  <Text style={styles.viewDetailsText}>Details</Text>
-                  <ChevronRight size={14} color="#6B7280" />
-                </TouchableOpacity> */}
               </View>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
         {/* Quick Actions */}
@@ -375,7 +389,7 @@ export default function ProfileScreen() {
               }
               placeholder="Name"
             />
-            <TextInput
+            {/* <TextInput
               style={styles.input}
               value={editProfileData?.phoneNumber || ''}
               onChangeText={(text) =>
@@ -383,7 +397,7 @@ export default function ProfileScreen() {
               }
               placeholder="Phone Number"
               keyboardType="phone-pad"
-            />
+            /> */}
             <TextInput
               style={styles.input}
               value={editProfileData?.email || ''}
@@ -392,6 +406,16 @@ export default function ProfileScreen() {
               }
               placeholder="Email"
               keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.disabledInput}
+              value={editProfileData?.nic || '202202202229'}
+              onChangeText={(text) =>
+                setEditProfileData({ ...editProfileData, nic: text })
+              }
+              placeholder="nic"
+              editable={false}
               autoCapitalize="none"
             />
 
@@ -581,6 +605,22 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  emptyHistoryCard: {
+    backgroundColor: '#F9FAFB',
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
+  },
+  emptyHistoryText: {
+    fontSize: 16,
+    color: '#6B7280',
+    fontStyle: 'italic',
+  },
   historyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -705,6 +745,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
+  },
+  disabledInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    backgroundColor: '#f5f5f5',
+    color: '#888',
   },
   button: {
     backgroundColor: '#DC2626',

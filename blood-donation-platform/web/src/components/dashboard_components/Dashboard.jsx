@@ -50,12 +50,6 @@ const bloodTypesRow2 = ["O-", "A-", "B-", "AB-"];
   }, []);
 
   // ----------------- Requests -----------------
-  const approveRequest = (id) => {
-    setRequests(prev =>
-      prev.map(req => (req.id === id ? { ...req, status: "Approved" } : req))
-    );
-  };
-
     const [donationIdCounter, setDonationIdCounter] = useState(1);
   const markUrgent = (id) => {
     setRequests(prev =>

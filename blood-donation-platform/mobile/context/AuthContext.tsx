@@ -1,11 +1,11 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStoredUserToken, getStoredUserProfile, clearStoredData } from '../utils/storage';
+import { getStoredUserToken, getStoredUserProfile, clearStoredData, storeUserToken } from '../utils/storage';
 
 type AuthContextType = {
   isLoggedIn: boolean;
   userId: string | null;
-  login: (id: string) => void;
+  login: (id: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -34,10 +34,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const login = (id: string) => {
-    setIsLoggedIn(true);
-    setUserId(id);
-    // Token is already stored in signin.tsx
+  const login = async (id: string) => {
+    try {
+      await storeUserToken(id);
+      setIsLoggedIn(true);
+      setUserId(id);
+      // Token is now properly stored
+    } catch (error) {
+      console.error('Error storing user token during login:', error);
+    }
   };
 
   const logout = async () => {

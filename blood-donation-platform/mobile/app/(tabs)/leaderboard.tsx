@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Trophy, Medal, Award, Crown } from 'lucide-react-native';
+import { useAuth } from '../../context/AuthContext';
 
 type User = {
   rank: number;
@@ -17,26 +18,95 @@ const leaderboardDataByPeriod: Record<string, User[]> = {
     { rank: 1, name: 'Kasun Perera', points: 2850, donations: 18, bloodType: 'O-', isCurrentUser: false },
     { rank: 2, name: 'Nimali Silva', points: 2340, donations: 15, bloodType: 'A+', isCurrentUser: false },
     { rank: 3, name: 'Rajesh Kumar', points: 1920, donations: 12, bloodType: 'B+', isCurrentUser: false },
-    { rank: 4, name: 'Sarah Williams', points: 1250, donations: 8, bloodType: 'O+', isCurrentUser: true },
-    { rank: 5, name: 'Amal Fernando', points: 1180, donations: 7, bloodType: 'AB+', isCurrentUser: false },
-    { rank: 6, name: 'Priya Jayawardene', points: 980, donations: 6, bloodType: 'A-', isCurrentUser: false },
+    { rank: 4, name: 'Amal Fernando', points: 1180, donations: 7, bloodType: 'AB+', isCurrentUser: false },
+    { rank: 5, name: 'Priya Jayawardene', points: 980, donations: 6, bloodType: 'A-', isCurrentUser: false },
+    { rank: 6, name: 'Sarah Williams', points: 700, donations: 1, bloodType: 'AB+', isCurrentUser: true },
+    { rank: 7, name: 'Ryan Gomas', points: 200, donations: 4, bloodType: 'O-', isCurrentUser: false },
   ],
   Lifetime: [
     { rank: 1, name: 'Kasun Perera', points: 12450, donations: 180, bloodType: 'O-', isCurrentUser: false },
     { rank: 2, name: 'Rajesh Kumar', points: 11230, donations: 165, bloodType: 'B+', isCurrentUser: false },
     { rank: 3, name: 'Nimali Silva', points: 10920, donations: 158, bloodType: 'A+', isCurrentUser: false },
-    { rank: 4, name: 'Sarah Williams', points: 8500, donations: 90, bloodType: 'O+', isCurrentUser: true },
-    { rank: 5, name: 'Amal Fernando', points: 7800, donations: 85, bloodType: 'AB+', isCurrentUser: false },
-    { rank: 6, name: 'Priya Jayawardene', points: 6000, donations: 70, bloodType: 'A-', isCurrentUser: false },
+    { rank: 4, name: 'Amal Fernando', points: 7800, donations: 85, bloodType: 'AB+', isCurrentUser: false },
+    { rank: 5, name: 'Priya Jayawardene', points: 6000, donations: 70, bloodType: 'A-', isCurrentUser: false },
+    { rank: 6, name: 'Sarah Williams', points: 700, donations: 1, bloodType: 'AB+', isCurrentUser: true },
+    { rank: 7, name: 'Ryan Gomas', points: 200, donations: 4, bloodType: 'O-', isCurrentUser: false },
   ],
 };
 
 export default function LeaderboardScreen() {
-  const [selectedPeriod, setSelectedPeriod] = useState('Monthly');
+  const [selectedPeriod] = useState('Lifetime'); // Fixed to Lifetime only
+  const [userData, setUserData] = useState<any>(null);
+  const { userId } = useAuth();
 
-  const leaderboardData = useMemo(() => leaderboardDataByPeriod[selectedPeriod], [selectedPeriod]);
+  // Fetch user data from backend
+  useEffect(() => {
+    if (userId) {
+      console.log(`Fetching leaderboard data for userId: ${userId}`);
+      fetch(`http://localhost:8082/donors/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Fetched user data for leaderboard:', data);
+          setUserData(data);
+        })
+        .catch(err => {
+          console.error('Fetch error in leaderboard:', err);
+          // Set fallback data if fetch fails
+          setUserData({
+            first_name: 'Sarah',
+            last_name: 'Williams',
+            blood_type: 'O+',
+            total_points: 1250,
+            total_donations: 8
+          });
+        });
+    } else {
+      // Fallback data when no userId
+      setUserData({
+        first_name: 'Sarah',
+        last_name: 'Williams',
+        blood_type: 'O+',
+        total_points: 1250,
+        total_donations: 8
+      });
+    }
+  }, [userId]);
+
+  // Update leaderboard data with current user information
+  const getLeaderboardDataWithCurrentUser = () => {
+    if (!userData) return leaderboardDataByPeriod[selectedPeriod];
+    
+    const currentUserName = `${userData.first_name} ${userData.last_name}`;
+    const baseData = leaderboardDataByPeriod[selectedPeriod];
+    
+    return baseData.map(user => {
+      if (user.isCurrentUser) {
+        return {
+          ...user,
+          name: currentUserName,
+          bloodType: userData.blood_type || user.bloodType,
+          points: userData.total_points || user.points,
+          donations: userData.total_donations || user.donations,
+        };
+      }
+      return user;
+    });
+  };
+
+  const leaderboardData = useMemo(() => getLeaderboardDataWithCurrentUser(), [userData]);
 
   const currentUser = leaderboardData.find(u => u.isCurrentUser) ?? leaderboardData[0];
+
+  // Show loading state if userData is not yet loaded
+  if (!userData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading leaderboard...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -79,7 +149,7 @@ export default function LeaderboardScreen() {
           </View>
         </View>
 
-        <View style={styles.periodSelector}>
+        {/* <View style={styles.periodSelector}>
           {Object.keys(leaderboardDataByPeriod).map(period => (
             <PeriodButton
               key={period}
@@ -88,12 +158,12 @@ export default function LeaderboardScreen() {
               onPress={() => setSelectedPeriod(period)}
             />
           ))}
-        </View>
+        </View> */}
 
         <View style={styles.currentUserCard}>
           <View style={styles.currentUserHeader}>
             <Text style={styles.currentUserTitle}>Your Rank</Text>
-            <Text style={styles.currentUserSubtitle}>{selectedPeriod} Leaderboard</Text>
+            <Text style={styles.currentUserSubtitle}>Lifetime Leaderboard</Text>
           </View>
           <View style={styles.currentUserStats}>
             <View style={styles.currentUserRank}>
@@ -149,6 +219,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
     paddingBottom: -100,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6B7280',
   },
   scrollView: {
     flex: 1,

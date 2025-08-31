@@ -21,58 +21,144 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 
 export default function AlertsScreen() {
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedBloodType, setSelectedBloodType] = useState('');
   const [showFilters, setShowFilters] = useState(true);
 
   // Animated value for filter height
   const filterHeight = useRef(new Animated.Value(0)).current;
 
-  const filters = ['All', 'O+', 'Routine', 'Nearby'];
+  const filters = ['All', 'AB+', 'Urgent','Routine', 'Nearby'];
+
+  const bloodTypes = ['AB+', 'O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB-'];
+  const statusFilters = ['Urgent', 'Routine', 'Nearby'];
+
+  // Handle filter selection
+  const handleFilterSelect = (filter: string) => {
+    if (filter === 'All') {
+      setSelectedFilter('All');
+      setSelectedBloodType('');
+    } else if (bloodTypes.includes(filter)) {
+      setSelectedBloodType(filter);
+      if (selectedFilter === 'All') {
+        setSelectedFilter('');
+      }
+    } else if (statusFilters.includes(filter)) {
+      setSelectedFilter(filter);
+    }
+  };
 
   const alerts = [
     {
       id: 1,
-      bloodType: 'O+',
-      location: 'Colombo General Hospital',
-      address: '282 Colombo 8, Sri Lanka',
-      distance: '2.3 km',
-      urgency: 'Routine',
-      timeLeft: '4 hours',
-      unitsNeeded: 3,
-      hospital: 'CGH',
+      bloodType: 'AB+',
+      location: 'National Blood Center',
+      address: 'No. 555/5D, Elvitigala Mawatha, Narahenpita, Colombo 05, Sri Lanka.',
+      distance: 'Colombo',
+      urgency: 'Urgent',
+      timeLeft: '18 hours ago',
+      unitsNeeded: 2,
+      hospital: 'NBC',
     },
     {
       id: 2,
       bloodType: 'O+',
-      location: 'Lady Ridgeway Hospital',
-      address: 'Danister De Silva Mawatha, Colombo 8',
-      distance: '5.7 km',
-      urgency: 'Urgent',
-      timeLeft: '12 hours',
-      unitsNeeded: 2,
-      hospital: 'LRH',
+      location: 'Base Hospital Gampola',
+      address: '100 Kandy Rd, Gampola',
+      distance: 'Kandy',
+      urgency: 'Routine',
+      timeLeft: '4 hours ago',
+      unitsNeeded: 3,
+      hospital: 'BHG',
     },
+    
     {
       id: 3,
-      bloodType: 'O-',
-      location: 'Teaching Hospital Karapitiya',
-      address: 'Karapitiya, Galle',
-      distance: '120 km',
-      urgency: 'Routine',
-      timeLeft: '6 hours',
-      unitsNeeded: 5,
-      hospital: 'THK',
+      bloodType: 'O+',
+      location: 'Peradeniya Teaching Hospital',
+      address: 'Peradeniya',
+      distance: 'Kandy',
+      urgency: 'Urgent',
+      timeLeft: '12 hours ago',
+      unitsNeeded: 2,
+      hospital: 'PTH',
     },
     {
       id: 4,
-      bloodType: 'A+',
-      location: 'Kandy General Hospital',
-      address: 'Kandy, Central Province',
-      distance: '85 km',
-      urgency: 'Urgent',
-      timeLeft: '18 hours',
-      unitsNeeded: 2,
-      hospital: 'KGH',
+      bloodType: 'O-',
+      location: 'Kandy National Hospital (Teaching)',
+      address: 'William Gopallawa Mawatha, Kandy',
+      distance: 'Kandy',
+      urgency: 'Routine',
+      timeLeft: '6 hours ago',
+      unitsNeeded: 5,
+      hospital: 'KNH',
     },
+    {
+      id: 5,
+      bloodType: 'A+',
+      location: 'DGH Nawalapitiya',
+      address: 'Nawalapitiya',
+      distance: 'Kandy',
+      urgency: 'Routine',
+      timeLeft: '18 hours ago',
+      unitsNeeded: 2,
+      hospital: 'DGH',
+    },
+    {
+      id: 6,
+      bloodType: 'AB+',
+      location: 'Base Hospital Wathupitiwala',
+      address: 'Wathupitiwala',
+      distance: 'Gampaha',
+      urgency: 'Urgent',
+      timeLeft: '18 hours ago',
+      unitsNeeded: 2,
+      hospital: 'NBC',
+    },
+    {
+      id: 7,
+      bloodType: 'AB+',
+      location: 'Base Hospital Teldeniya',
+      address: 'Teldeniya',
+      distance: 'Kandy',
+      urgency: 'Routine',
+      timeLeft: '18 hours ago',
+      unitsNeeded: 2,
+      hospital: 'BHT',
+    },
+    {
+      id: 8,
+      bloodType: 'O+',
+      location: 'Peradeniya Teaching Hospital',
+      address: 'Peradeniya',
+      distance: 'Kandy',
+      urgency: 'Routine',
+      timeLeft: '10 days ago',
+      unitsNeeded: 2,
+      hospital: 'PTH',
+    },
+    {
+      id: 9,
+      bloodType: 'A-',
+      location: 'Peradeniya Teaching Hospital',
+      address: 'Peradeniya',
+      distance: 'Kandy',
+      urgency: 'Urgent',
+      timeLeft: '20 days ago',
+      unitsNeeded: 1,
+      hospital: 'PTH',
+    },
+    {
+      id: 10,
+      bloodType: 'AB+',
+      location: 'Peradeniya Teaching Hospital',
+      address: 'Peradeniya',
+      distance: 'Kandy',
+      urgency: 'Urgent',
+      timeLeft: 'few minutes ago',
+      unitsNeeded: 10,
+      hospital: 'PTH',
+    }
   ];
 
   // Animate filter bar open/close
@@ -81,18 +167,57 @@ export default function AlertsScreen() {
     setShowFilters(prev => !prev);
   };
 
-  // Filter alerts based on selected filter
+  // Filter and sort alerts based on selected filters
   const filteredAlerts = alerts.filter(alert => {
-    if (selectedFilter === 'All') return true;
+    // First filter by blood type if selected
+    if (selectedBloodType && alert.bloodType !== selectedBloodType) {
+      return false;
+    }
+    
+    // Then apply additional filters
+    if (selectedFilter === 'All' || selectedFilter === '') {
+      return true;
+    }
     if (selectedFilter === 'Nearby') {
-      const distanceNum = parseFloat(alert.distance);
-      return distanceNum <= 10; // nearby = within 10 km
+      return alert.distance.match('Kandy'); // nearby = Kandy district
     }
     if (selectedFilter === 'Routine') {
       return alert.urgency === 'Routine';
     }
-    // blood types
-    return alert.bloodType === selectedFilter;
+    if (selectedFilter === 'Urgent') {
+      return alert.urgency === 'Urgent';
+    }
+    
+    return true;
+    }).sort((a, b) => {
+    // Parse time strings to get comparable values
+    const parseTime = (timeStr: string) => {
+      const lowerTime = timeStr.toLowerCase();
+      
+      if (lowerTime.includes('few minutes ago') || lowerTime.includes('minute')) {
+      return 0; // Most recent
+      }
+      if (lowerTime.includes('hour')) {
+      const hours = parseInt(lowerTime.match(/\d+/)?.[0] || '0');
+      return hours;
+      }
+      if (lowerTime.includes('day')) {
+      const days = parseInt(lowerTime.match(/\d+/)?.[0] || '0');
+      return days * 24; // Convert days to hours for comparison
+      }
+      
+      return 999999; // Unknown format goes to the end
+    };
+    
+    const timeA = parseTime(a.timeLeft);
+    const timeB = parseTime(b.timeLeft);
+    
+    return timeA - timeB; // Sort ascending (most recent first)
+    if (selectedFilter === 'All' || selectedFilter === '') {
+      // Sort by location in ascending order (A to Z)
+      return a.location.localeCompare(b.location);
+    }
+    return 0; // No sorting for other filters
   });
 
   const getUrgencyColor = (urgency: string) => {
@@ -116,6 +241,17 @@ export default function AlertsScreen() {
     </TouchableOpacity>
   );
 
+  // Helper function to determine if a filter is selected
+  const isFilterSelected = (filter: string) => {
+    if (filter === 'All') {
+      return selectedFilter === 'All' && !selectedBloodType;
+    }
+    if (bloodTypes.includes(filter)) {
+      return selectedBloodType === filter;
+    }
+    return selectedFilter === filter;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -138,8 +274,8 @@ export default function AlertsScreen() {
         <FilterButton
           key={filter}
           title={filter}
-          isSelected={selectedFilter === filter}
-          onPress={() => setSelectedFilter(filter)}
+          isSelected={isFilterSelected(filter)}
+          onPress={() => handleFilterSelect(filter)}
         />
       ))}
     </ScrollView>
@@ -172,13 +308,13 @@ export default function AlertsScreen() {
             </View>
 
             <View style={styles.alertMetrics}>
-              <View style={styles.metric}>
+              {/* <View style={styles.metric}>
                 <MapPin size={16} color="#6B7280" />
                 <Text style={styles.metricText}>Approximately {alert.distance}</Text>
-              </View>
+              </View> */}
               <View style={styles.metric}>
                 <Clock size={16} color="#DC2626" />
-                <Text style={styles.metricText}>Needed in {alert.timeLeft}</Text>
+                <Text style={styles.metricText}>Requested in {alert.timeLeft}</Text>
               </View>
             </View>
           </View>
